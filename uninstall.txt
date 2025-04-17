@@ -1,0 +1,4 @@
+folium==0.14.0
+plotly==5.15.0
+statsmodels==0.13.5
+scikit-image==0.20.3
