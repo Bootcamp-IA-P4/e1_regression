@@ -1,11 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Realizar Predicción{% endblock %}
+
+{% block content %}
+<h1>Realizar Nueva Predicción de Valor de Vivienda</h1>
+
+{# Mostrar resultado si existe #}
+{% if prediction_saved and prediction_result %}
+    <div class="alert alert-success">
+        <h2>¡Predicción Realizada!</h2>
+        <p>El valor predicho para la vivienda con las características ingresadas es: <strong>{{ "%.2f"|format(prediction_result) }}</strong></p>
+        <h3>Datos Utilizados:</h3>
+        <ul>
+            {% for key, value in input_data.items() %}
+                <li><strong>{{ key }}:</strong> {{ value }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <hr>
+    <p><a href="{{ url_for('main.predict_page') }}">Realizar otra predicción</a></p>
+{% else %}
+    {# Mostrar el formulario si no hay resultado #}
+    <p>Introduce las características de la zona para obtener una predicción del valor medio de la vivienda.</p>
+
+    {# Mapeo de claves internas a etiquetas legibles #}
+    {% set labels = {
+        'MedInc': 'Ingreso Medio (Decenas de miles $)',
+        'HouseAge': 'Edad Media Viviendas (años)',
+        'AveRooms': 'Promedio Habitaciones',
+        'AveBedrms': 'Promedio Dormitorios',
+        'Population': 'Población Zona',
+        'AveOccup': 'Promedio Ocupantes por Vivienda',
+        'Latitude': 'Latitud',
+        'Longitude': 'Longitud'
+    } %}
+
+    {# Usamos method="POST". action="" enviará al mismo URL (/predict) #}
+    <form method="POST" action="{{ url_for('main.predict_page') }}">
+        {% for key, label in labels.items() %}
+        <div class="mb-3"> {# Ejemplo con Bootstrap #}
+            <label for="{{ key }}" class="form-label">{{ label }}:</label>
+            <input type="number" step="any" class="form-control" id="{{ key }}" name="{{ key }}"
+                   value="{{ form_data.get(key, '') }}" required>
+             {# 'value' rellena el campo si hay datos previos (ej. en error) #}
+             {# 'step="any"' permite decimales #}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Predecir Valor</button> {# Ejemplo Bootstrap #}
+    </form>
+{% endif %}
+
+{% endblock %}

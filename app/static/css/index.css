@@ -1,6 +1,244 @@
-/* body{
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
+/* --- Reset y Estilos Base --- */
+* {
+    box-sizing: border-box; /* Mejor manejo del padding y border */
     margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa; /* Un fondo gris muy claro */
     padding: 20px;
-} */
+}
+
+/* --- Contenedor Principal --- */
+.container {
+    max-width: 960px; /* Ancho máximo para el contenido */
+    margin: 20px auto; /* Centrar el contenedor */
+    padding: 30px;
+    background-color: #ffffff; /* Fondo blanco para el contenido */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+/* --- Encabezados --- */
+h1, h2, h3 {
+    color: #0056b3; /* Un azul corporativo */
+    margin-bottom: 0.8em;
+    line-height: 1.3;
+}
+h1 { font-size: 2.2em; border-bottom: 2px solid #eee; padding-bottom: 0.3em;}
+h2 { font-size: 1.6em; }
+h3 { font-size: 1.3em; }
+
+/* --- Párrafos y Links --- */
+p {
+    margin-bottom: 1em;
+}
+
+a {
+    color: #007bff; /* Azul estándar para links */
+    text-decoration: none; /* Quitar subrayado por defecto */
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline; /* Subrayado al pasar el ratón */
+}
+
+/* --- Navegación (si usas la del base.html) --- */
+nav {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+nav a {
+    margin-right: 20px;
+    margin-left: 20px;
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+/* --- Formularios --- */
+form div { /* Espaciado entre campos */
+    margin-bottom: 18px;
+}
+
+label {
+    display: block; /* El label ocupa su propia línea */
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #495057;
+}
+
+input[type="number"],
+input[type="text"], /* Si añadieras otros tipos */
+input[type="email"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+input[type="email"]:focus {
+    border-color: #80bdff; /* Borde azul al enfocar */
+    outline: 0; /* Quitar el outline feo del navegador */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Resplandor suave */
+}
+
+/* --- Botones --- */
+button[type="submit"],
+.btn { /* Clase genérica para botones/links estilizados como botón */
+    display: inline-block; /* Permite padding y margin */
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 500;
+    text-align: center;
+    text-decoration: none; /* Para los links .btn */
+    transition: background-color 0.2s ease-in-out;
+}
+
+button[type="submit"]:hover,
+.btn:hover {
+    background-color: #0056b3; /* Azul más oscuro al pasar */
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.btn-success { /* Clase específica si la usaste en el HTML */
+    background-color: #28a745; /* Verde */
+}
+.btn-success:hover {
+    background-color: #218838;
+}
+
+
+/* --- Tablas (para index.html) --- */
+table {
+    width: 100%;
+    border-collapse: collapse; /* Bordes unidos */
+    margin-top: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+th, td {
+    padding: 12px 15px; /* Más espaciado interno */
+    text-align: left;
+    border-bottom: 1px solid #dee2e6; /* Líneas horizontales suaves */
+}
+
+thead th {
+    background-color: #e9ecef; /* Cabecera gris claro */
+    color: #495057;
+    font-weight: 600;
+    border-top: 1px solid #dee2e6;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f8f9fa; /* Rayas zebra sutiles */
+}
+
+tbody tr:hover {
+    background-color: #e9ecef; /* Resaltar fila al pasar */
+}
+
+/* --- Mensajes Flash y Alertas (Resultado predicción) --- */
+.alert {
+    padding: 18px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    position: relative;
+}
+
+.alert-success {
+    color: #155724; /* Texto verde oscuro */
+    background-color: #d4edda; /* Fondo verde claro */
+    border-color: #c3e6cb; /* Borde verde más claro */
+}
+.alert-success strong {
+    font-weight: bold;
+}
+
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.alert-info { /* Si decides usar flash('...', 'info') */
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+/* --- Elementos específicos (si los tienes) --- */
+hr {
+    border: 0;
+    height: 1px;
+    background-color: #dee2e6;
+    margin: 30px 0;
+}
+
+footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+/* --- Mejoras Responsive (Opcional Básico) --- */
+@media (max-width: 768px) {
+    body { padding: 10px; }
+    .container { padding: 20px; margin: 10px auto; }
+    h1 { font-size: 1.8em; }
+    h2 { font-size: 1.4em; }
+    /* Podrías ajustar más cosas, como el tamaño de fuente o la disposición de la tabla */
+    table, thead, tbody, th, td, tr {
+        display: block; /* Convierte la tabla en bloques */
+    }
+    thead tr {
+        position: absolute; /* Oculta cabecera tradicional */
+        top: -9999px;
+        left: -9999px;
+    }
+     tr { border: 1px solid #ccc; margin-bottom: 10px; }
+     td {
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 50%; /* Espacio para la pseudo-cabecera */
+        text-align: right;
+     }
+     td:before { /* Añade la cabecera como etiqueta */
+        position: absolute;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        content: attr(data-label); /* Necesitarías añadir data-label="Nombre Columna" a cada TD en el HTML */
+     }
+     /* NOTA: La tabla responsive así requiere modificar el HTML de la tabla */
+}

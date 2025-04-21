@@ -1,11 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Predicciones Recientes{% endblock %}
+
+{% block content %}
+<h1>Bienvenido al Sistema de Predicción de Vivienda</h1>
+<p>Esta aplicación utiliza un modelo de Machine Learning para predecir el valor medio de las viviendas basado en características de la zona.</p>
+<p><a href="{{ url_for('main.predict_page') }}" class="btn btn-success">Realizar una Nueva Predicción</a></p> {# Ejemplo Bootstrap #}
+
+<hr>
+
+<h2>Últimas Predicciones Realizadas</h2>
+
+{% if recent_predictions %}
+    <table class="table table-striped"> {# Ejemplo Bootstrap #}
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Ingreso Medio</th>
+                <th>Edad Media</th>
+                <th>Prom. Habitaciones</th>
+                <th>Prom. Dormitorios</th>
+                <th>Población</th>
+                <th>Latitud</th>
+                <th>Longitud</th>
+                <th>Valor Predicho</th>
+                <!-- <th>Valor Real (si existe)</th> -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in recent_predictions %}
+            <tr>
+                {# Asumiendo que created_at es un objeto datetime o similar #}
+                {# Puedes usar filtros como |strftime('%Y-%m-%d %H:%M') #}
+                <td>{{ item.prediction_created_at.strftime('%Y-%m-%d %H:%M') if item.prediction_created_at else 'N/A' }}</td>
+                <td>{{ "%.4f"|format(item.med_income) }}</td>
+                <td>{{ "%.1f"|format(item.house_age) }}</td>
+                <td>{{ "%.2f"|format(item.ave_rooms) }}</td>
+                <td>{{ "%.2f"|format(item.ave_bedrooms) }}</td>
+                <td>{{ "%.0f"|format(item.population) }}</td>
+                <td>{{ "%.4f"|format(item.latitude) }}</td>
+                <td>{{ "%.4f"|format(item.longitude) }}</td>
+                <td><strong>{{ "%.3f"|format(item.predicted_value) }}</strong></td>
+                <!-- <td>{{ item.actual_value if item.actual_value else '-' }}</td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Aún no se han realizado predicciones.</p>
+{% endif %}
+
+{% endblock %}
