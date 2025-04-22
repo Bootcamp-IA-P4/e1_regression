@@ -30,18 +30,27 @@
         <tbody>
             {% for item in recent_predictions %}
             <tr>
-                {# Asumiendo que created_at es un objeto datetime o similar #}
-                {# Puedes usar filtros como |strftime('%Y-%m-%d %H:%M') #}
-                <td>{{ item.prediction_created_at.strftime('%Y-%m-%d %H:%M') if item.prediction_created_at else 'N/A' }}</td>
-                <td>{{ "%.4f"|format(item.med_income) }}</td>
-                <td>{{ "%.1f"|format(item.house_age) }}</td>
-                <td>{{ "%.2f"|format(item.ave_rooms) }}</td>
-                <td>{{ "%.2f"|format(item.ave_bedrooms) }}</td>
-                <td>{{ "%.0f"|format(item.population) }}</td>
-                <td>{{ "%.4f"|format(item.latitude) }}</td>
-                <td>{{ "%.4f"|format(item.longitude) }}</td>
-                <td><strong>{{ "%.3f"|format(item.predicted_value) }}</strong></td>
-                <!-- <td>{{ item.actual_value if item.actual_value else '-' }}</td> -->
+                <td>{{ item['prediction_created_at'].strftime('%Y-%m-%d %H:%M') if item['prediction_created_at'] else 'N/A' }}</td>
+
+                {# --- REEMPLAZA LAS SIGUIENTES LÍNEAS --- #}
+                {# Usa los nombres de columna reales de tu tabla 'properties' #}
+                {# que se unen en get_recent_with_property #}
+                {# Ejemplo con algunas de tus features mapeadas: #}
+                <td>{{ item['calidad_general'] }}</td>         {# Ejemplo: En lugar de med_income #}
+                <td>{{ item['metros_habitables'] }}</td>       {# Ejemplo: En lugar de house_age #}
+                <td>{{ item['ano_construccion'] }}</td>         {# Ejemplo: En lugar de ave_rooms #}
+                <td>{{ item['banos_completos'] }}</td>       {# Ejemplo: En lugar de ave_bedrooms #}
+                <td>{{ item['coches_garaje'] }}</td>          {# Ejemplo: En lugar de population #}
+                <td>{{ item['area_garaje'] }}</td>            {# Ejemplo: En lugar de latitude #}
+                <td>{{ item['calidad_cocina'] }}</td>         {# Ejemplo: En lugar de longitude #}
+                {# ... añade o ajusta más columnas según las que quieras mostrar ... #}
+                {# Y asegúrate de que los nombres coinciden EXACTAMENTE con las #}
+                {# columnas de tu tabla 'properties' #}
+
+                {# --- Valor Predicho (este probablemente está bien) --- #}
+                <td><strong>{{ "%.3f"|format(item['predicted_value']) }}</strong></td>
+
+                <!-- <td>{{ item['actual_value'] if item['actual_value'] else '-' }}</td> -->
             </tr>
             {% endfor %}
         </tbody>

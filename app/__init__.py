@@ -5,6 +5,8 @@ from flask_mysqldb import MySQL
 from config import config_by_name
 import logging # Importar logging
 
+
+
 # Instancia de la extensión MySQL (sin inicializar app aún)
 mysql = MySQL()
 
@@ -43,8 +45,9 @@ def create_app(config_name=None):
          # Decide si la app debe detenerse. Por ahora, continúa pero sin modelo.
 
     # Registrar Blueprints
-    from .routes import main_bp # Importación relativa
-    app.register_blueprint(main_bp) # Registra el blueprint (prefijo / definido en el blueprint si es necesario)
+    from .routes import main_bp # Importación DENTRO de la función si hay dependencias circulares
+    app.register_blueprint(main_bp) # SIN prefijo url_prefix si quieres que '/' funcione
+# Si pones app.register_blueprint(main_bp, url_prefix='/'), está bien también.
     app.logger.info("Blueprint 'main' registrado.")
 
     # (Opcional) Registrar manejadores de error globales
