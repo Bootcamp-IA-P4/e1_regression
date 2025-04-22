@@ -1,11 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Predicciones Recientes{% endblock %}
+
+{% block content %}
+<h1>Bienvenido al Sistema de Predicción de Vivienda</h1>
+<p>Esta aplicación utiliza un modelo de Machine Learning para predecir el valor medio de las viviendas basado en características de la zona.</p>
+<p><a href="{{ url_for('main.predict_page') }}" class="btn btn-success">Realizar una Nueva Predicción</a></p> {# Ejemplo Bootstrap #}
+
+<hr>
+
+<h2>Últimas Predicciones Realizadas</h2>
+
+{% if recent_predictions %}
+    <table class="table table-striped"> {# Ejemplo Bootstrap #}
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Ingreso Medio</th>
+                <th>Edad Media</th>
+                <th>Prom. Habitaciones</th>
+                <th>Prom. Dormitorios</th>
+                <th>Población</th>
+                <th>Latitud</th>
+                <th>Longitud</th>
+                <th>Valor Predicho</th>
+                <!-- <th>Valor Real (si existe)</th> -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in recent_predictions %}
+            <tr>
+                <td>{{ item['prediction_created_at'].strftime('%Y-%m-%d %H:%M') if item['prediction_created_at'] else 'N/A' }}</td>
+
+                {# --- REEMPLAZA LAS SIGUIENTES LÍNEAS --- #}
+                {# Usa los nombres de columna reales de tu tabla 'properties' #}
+                {# que se unen en get_recent_with_property #}
+                {# Ejemplo con algunas de tus features mapeadas: #}
+                <td>{{ item['calidad_general'] }}</td>         {# Ejemplo: En lugar de med_income #}
+                <td>{{ item['metros_habitables'] }}</td>       {# Ejemplo: En lugar de house_age #}
+                <td>{{ item['ano_construccion'] }}</td>         {# Ejemplo: En lugar de ave_rooms #}
+                <td>{{ item['banos_completos'] }}</td>       {# Ejemplo: En lugar de ave_bedrooms #}
+                <td>{{ item['coches_garaje'] }}</td>          {# Ejemplo: En lugar de population #}
+                <td>{{ item['area_garaje'] }}</td>            {# Ejemplo: En lugar de latitude #}
+                <td>{{ item['calidad_cocina'] }}</td>         {# Ejemplo: En lugar de longitude #}
+                {# ... añade o ajusta más columnas según las que quieras mostrar ... #}
+                {# Y asegúrate de que los nombres coinciden EXACTAMENTE con las #}
+                {# columnas de tu tabla 'properties' #}
+
+                {# --- Valor Predicho (este probablemente está bien) --- #}
+                <td><strong>{{ "%.3f"|format(item['predicted_value']) }}</strong></td>
+
+                <!-- <td>{{ item['actual_value'] if item['actual_value'] else '-' }}</td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Aún no se han realizado predicciones.</p>
+{% endif %}
+
+{% endblock %}
