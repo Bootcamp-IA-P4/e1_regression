@@ -1,261 +1,734 @@
 {% extends 'base.html' %}
 
-{% block title %}Realizar Predicción Valor Vivienda - Ames Housing{% endblock %}
+{% block title %}Calculadora de Precios - California Dreamin'{% endblock %}
 
 {% block content %}
-<h1>Realizar Nueva Predicción de Valor de Vivienda (Ames Housing)</h1>
-
-{# Mostrar resultado si existe y no es None #}
-{% if prediction_saved and prediction_result is not none %}
-    <div class="alert alert-success">
-        <h2>¡Predicción Realizada!</h2>
-        {# --- CAMBIO: Formato de dólares --- #}
-        <p>El valor predicho para la vivienda con las características ingresadas es: <strong>${{ "{:,.2f}".format(prediction_result) }}</strong></p>
-
-        {# --- CAMBIO: Mostrar input_data (procesados) en lugar de raw_form_data --- #}
-        <h3>Datos Utilizados (Validados):</h3>
-        <ul>
-            {% for key, value in input_data.items() %}
-                {# Formatear clave para legibilidad #}
-                <li><strong>{{ key|replace('_', ' ')|title }}:</strong> {{ value }}</li>
-            {% endfor %}
-        </ul>
+    <div class="content-grid">
+        <!-- Panel izquierdo (formulario) -->
+        <div class="form-panel">
+            <h1 class="retro-title">Calculadora de Precios</h1>
+            
+            <!-- Barra de progreso animada con zigzag -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+                <div class="progress-zigzag"></div>
+            </div>
+            
+            <!-- Contador de pasos -->
+            <div class="step-counter">
+                <span id="step-counter">Paso 1 de 25</span>
+            </div>
+            
+            <!-- Formulario -->
+            <form id="housing-wizard-form" method="POST" action="{{ url_for('main.predict_page') }}">
+                
+                <!-- Paso 1: Calidad General -->
+                <div class="step-container active" id="step-1">
+                    <h2 class="step-title">Calidad General</h2>
+                    <p class="step-description">¿Qué calificación general le darías a la vivienda?</p>
+                    <div class="option-buttons">
+                        <!-- Opciones de 1-10 -->
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadGeneral-1" name="CalidadGeneral" value="1" required>
+                            <label for="CalidadGeneral-1" class="option-button">
+                                1
+                                <span class="option-description">Muy pobre</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadGeneral-2" name="CalidadGeneral" value="2" required>
+                            <label for="CalidadGeneral-2" class="option-button">
+                                2
+                                <span class="option-description">Pobre</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadGeneral-3" name="CalidadGeneral" value="3" required>
+                            <label for="CalidadGeneral-3" class="option-button">
+                                3
+                                <span class="option-description">Pobre</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadGeneral-4" name="CalidadGeneral" value="4" required>
+                            <label for="CalidadGeneral-4" class="option-button">
+                                4
+                                <span class="option-description">Regular</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadGeneral-5" name="CalidadGeneral" value="5" required>
+                            <label for="CalidadGeneral-5" class="option-button">
+                                5
+                                <span class="option-description">Regular</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadGeneral-6" name="CalidadGeneral" value="6" required>
+                            <label for="CalidadGeneral-6" class="option-button">
+                                6
+                                <span class="option-description">Buena</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadGeneral-7" name="CalidadGeneral" value="7" required>
+                            <label for="CalidadGeneral-7" class="option-button">
+                                7
+                                <span class="option-description">Buena</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadGeneral-8" name="CalidadGeneral" value="8" required>
+                            <label for="CalidadGeneral-8" class="option-button">
+                                8
+                                <span class="option-description">Muy buena</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadGeneral-9" name="CalidadGeneral" value="9" required>
+                            <label for="CalidadGeneral-9" class="option-button">
+                                9
+                                <span class="option-description">Muy buena</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadGeneral-10" name="CalidadGeneral" value="10" required>
+                            <label for="CalidadGeneral-10" class="option-button">
+                                10
+                                <span class="option-description">Excelente</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 2: Metros Habitables -->
+                <div class="step-container" id="step-2">
+                    <h2 class="step-title">Metros Habitables</h2>
+                    <p class="step-description">Indica el área total habitable de la vivienda en metros cuadrados.</p>
+                    <div class="input-container">
+                        <input type="number" step="0.01" id="MetrosHabitables" name="MetrosHabitables" placeholder="Ej: 150.5" required>
+                        <span class="input-icon">m²</span>
+                    </div>
+                </div>
+                
+                <!-- Paso 3: Coches en Garaje -->
+                <div class="step-container" id="step-3">
+                    <h2 class="step-title">Capacidad del Garaje</h2>
+                    <p class="step-description">¿Cuántos coches caben en el garaje?</p>
+                    <div class="option-buttons">
+                        <div class="option-wrapper">
+                            <input type="radio" id="CochesGaraje-0" name="CochesGaraje" value="0" required>
+                            <label for="CochesGaraje-0" class="option-button">
+                                0
+                                <span class="option-description">Sin garaje</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CochesGaraje-1" name="CochesGaraje" value="1" required>
+                            <label for="CochesGaraje-1" class="option-button">
+                                1
+                                <span class="option-description">coche</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CochesGaraje-2" name="CochesGaraje" value="2" required>
+                            <label for="CochesGaraje-2" class="option-button">
+                                2
+                                <span class="option-description">coches</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CochesGaraje-3" name="CochesGaraje" value="3" required>
+                            <label for="CochesGaraje-3" class="option-button">
+                                3
+                                <span class="option-description">coches</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CochesGaraje-4" name="CochesGaraje" value="4" required>
+                            <label for="CochesGaraje-4" class="option-button">
+                                4
+                                <span class="option-description">coches</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 4: Área Garaje -->
+                <div class="step-container" id="step-4">
+                    <h2 class="step-title">Área del Garaje</h2>
+                    <p class="step-description">Indica la superficie total del garaje en metros cuadrados.</p>
+                    <div class="input-container">
+                        <input type="number" step="0.01" id="ÁreaGaraje" name="ÁreaGaraje" placeholder="Ej: 0 si no hay garaje" value="0" required>
+                        <span class="input-icon">m²</span>
+                    </div>
+                </div>
+                
+                <!-- Paso 5: Metros Totales Sótano -->
+                <div class="step-container" id="step-5">
+                    <h2 class="step-title">Área del Sótano</h2>
+                    <p class="step-description">Indica la superficie total del sótano en metros cuadrados.</p>
+                    <div class="input-container">
+                        <input type="number" step="0.01" id="MetrosTotalesSótano" name="MetrosTotalesSótano" placeholder="Ej: 0 si no hay sótano" value="0" required>
+                        <span class="input-icon">m²</span>
+                    </div>
+                </div>
+                
+                <!-- Paso 6: Metros 1ra Planta -->
+                <div class="step-container" id="step-6">
+                    <h2 class="step-title">Área Primera Planta</h2>
+                    <p class="step-description">Indica la superficie de la primera planta en metros cuadrados.</p>
+                    <div class="input-container">
+                        <input type="number" step="0.01" id="Metros1raPlanta" name="Metros1raPlanta" placeholder="Ej: 85.0" required>
+                        <span class="input-icon">m²</span>
+                    </div>
+                </div>
+                
+                <!-- Paso 7: Baños Completos -->
+                <div class="step-container" id="step-7">
+                    <h2 class="step-title">Baños Completos</h2>
+                    <p class="step-description">¿Cuántos baños completos tiene la vivienda?</p>
+                    <div class="option-buttons">
+                        <div class="option-wrapper">
+                            <input type="radio" id="BañosCompletos-0" name="BañosCompletos" value="0" required>
+                            <label for="BañosCompletos-0" class="option-button">
+                                0
+                                <span class="option-description">Ninguno</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="BañosCompletos-1" name="BañosCompletos" value="1" required>
+                            <label for="BañosCompletos-1" class="option-button">
+                                1
+                                <span class="option-description">Un baño</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="BañosCompletos-2" name="BañosCompletos" value="2" required>
+                            <label for="BañosCompletos-2" class="option-button">
+                                2
+                                <span class="option-description">Dos baños</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="BañosCompletos-3" name="BañosCompletos" value="3" required>
+                            <label for="BañosCompletos-3" class="option-button">
+                                3
+                                <span class="option-description">Tres baños</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 8: Total Habitaciones Sobre Suelo -->
+                <div class="step-container" id="step-8">
+                    <h2 class="step-title">Habitaciones</h2>
+                    <p class="step-description">¿Cuántas habitaciones tiene la vivienda sobre el nivel del suelo?</p>
+                    <div class="option-buttons">
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-2" name="TotalHabitacionesSobreSuelo" value="2" required>
+                            <label for="TotalHabitacionesSobreSuelo-2" class="option-button">2</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-3" name="TotalHabitacionesSobreSuelo" value="3" required>
+                            <label for="TotalHabitacionesSobreSuelo-3" class="option-button">3</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-4" name="TotalHabitacionesSobreSuelo" value="4" required>
+                            <label for="TotalHabitacionesSobreSuelo-4" class="option-button">4</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-5" name="TotalHabitacionesSobreSuelo" value="5" required>
+                            <label for="TotalHabitacionesSobreSuelo-5" class="option-button">5</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-6" name="TotalHabitacionesSobreSuelo" value="6" required>
+                            <label for="TotalHabitacionesSobreSuelo-6" class="option-button">6</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-7" name="TotalHabitacionesSobreSuelo" value="7" required>
+                            <label for="TotalHabitacionesSobreSuelo-7" class="option-button">7</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-8" name="TotalHabitacionesSobreSuelo" value="8" required>
+                            <label for="TotalHabitacionesSobreSuelo-8" class="option-button">8</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-9" name="TotalHabitacionesSobreSuelo" value="9" required>
+                            <label for="TotalHabitacionesSobreSuelo-9" class="option-button">9</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-10" name="TotalHabitacionesSobreSuelo" value="10" required>
+                            <label for="TotalHabitacionesSobreSuelo-10" class="option-button">10</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-11" name="TotalHabitacionesSobreSuelo" value="11" required>
+                            <label for="TotalHabitacionesSobreSuelo-11" class="option-button">11</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-12" name="TotalHabitacionesSobreSuelo" value="12" required>
+                            <label for="TotalHabitacionesSobreSuelo-12" class="option-button">12</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="TotalHabitacionesSobreSuelo-14" name="TotalHabitacionesSobreSuelo" value="14" required>
+                            <label for="TotalHabitacionesSobreSuelo-14" class="option-button">14</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 9: Año Construcción -->
+                <div class="step-container" id="step-9">
+                    <h2 class="step-title">Año de Construcción</h2>
+                    <p class="step-description">¿En qué año se construyó la vivienda?</p>
+                    <div class="input-container">
+                        <input type="number" id="AñoConstrucción" name="AñoConstrucción" min="1800" max="2025" placeholder="Ej: 1995" required>
+                        <span class="input-icon">📅</span>
+                    </div>
+                </div>
+                
+                <!-- Paso 10: Año Renovación -->
+                <div class="step-container" id="step-10">
+                    <h2 class="step-title">Año de Renovación</h2>
+                    <p class="step-description">¿En qué año se renovó por última vez? Si no ha sido renovada, indica el mismo año de construcción.</p>
+                    <div class="input-container">
+                        <input type="number" id="AñoRenovación" name="AñoRenovación" min="1800" max="2025" placeholder="Ej: 2005" required>
+                        <span class="input-icon">📅</span>
+                    </div>
+                </div>
+                
+                <!-- Paso 11: Área Revestimiento Mampostería -->
+                <div class="step-container" id="step-11">
+                    <h2 class="step-title">Revestimiento de Mampostería</h2>
+                    <p class="step-description">Indica la superficie de revestimiento de mampostería en metros cuadrados.</p>
+                    <div class="input-container">
+                        <input type="number" step="0.01" id="ÁreaRevestimientoMampostería" name="ÁreaRevestimientoMampostería" value="0" required>
+                        <span class="input-icon">m²</span>
+                    </div>
+                </div>
+                
+                <!-- Paso 12: Chimeneas -->
+                <div class="step-container" id="step-12">
+                    <h2 class="step-title">Chimeneas</h2>
+                    <p class="step-description">¿Cuántas chimeneas tiene la vivienda?</p>
+                    <div class="option-buttons">
+                        <div class="option-wrapper">
+                            <input type="radio" id="Chimeneas-0" name="Chimeneas" value="0" required>
+                            <label for="Chimeneas-0" class="option-button">
+                                0
+                                <span class="option-description">Ninguna</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="Chimeneas-1" name="Chimeneas" value="1" required>
+                            <label for="Chimeneas-1" class="option-button">
+                                1
+                                <span class="option-description">Una</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="Chimeneas-2" name="Chimeneas" value="2" required>
+                            <label for="Chimeneas-2" class="option-button">
+                                2
+                                <span class="option-description">Dos</span>
+                            </label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="Chimeneas-3" name="Chimeneas" value="3" required>
+                            <label for="Chimeneas-3" class="option-button">
+                                3
+                                <span class="option-description">Tres</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 13: Metros Acabados Sótano -->
+                <div class="step-container" id="step-13">
+                    <h2 class="step-title">Área Habitable del Sótano</h2>
+                    <p class="step-description">Indica la superficie acabada (habitable) del sótano en metros cuadrados.</p>
+                    <div class="input-container">
+                        <input type="number" step="0.01" id="MetrosAcabadosSótano1" name="MetrosAcabadosSótano1" value="0" required>
+                        <span class="input-icon">m²</span>
+                    </div>
+                </div>
+                
+                <!-- Paso 14: Frente Lote -->
+                <div class="step-container" id="step-14">
+                    <h2 class="step-title">Frente del Lote</h2>
+                    <p class="step-description">Indica el ancho del frente del lote en metros lineales.</p>
+                    <div class="input-container">
+                        <input type="number" step="0.01" id="FrenteLote" name="FrenteLote" placeholder="Ej: 20.0" value="0" required>
+                        <span class="input-icon">m</span>
+                    </div>
+                </div>
+                
+                <!-- Paso 15: Calidad Exterior -->
+                <div class="step-container" id="step-15">
+                    <h2 class="step-title">Calidad Material Exterior</h2>
+                    <p class="step-description">¿Qué calidad tiene el material del exterior de la vivienda?</p>
+                    <div class="option-buttons category-buttons">
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadExterior-Gd" name="CalidadExterior" value="Gd" required>
+                            <label for="CalidadExterior-Gd" class="option-button">Buena</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadExterior-TA" name="CalidadExterior" value="TA" required>
+                            <label for="CalidadExterior-TA" class="option-button">Promedio</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadExterior-Ex" name="CalidadExterior" value="Ex" required>
+                            <label for="CalidadExterior-Ex" class="option-button">Excelente</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadExterior-Fa" name="CalidadExterior" value="Fa" required>
+                            <label for="CalidadExterior-Fa" class="option-button">Regular</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 16: Calidad Cocina -->
+                <div class="step-container" id="step-16">
+                    <h2 class="step-title">Calidad de la Cocina</h2>
+                    <p class="step-description">¿Cómo calificarías la cocina de la vivienda?</p>
+                    <div class="option-buttons category-buttons">
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadCocina-Gd" name="CalidadCocina" value="Gd" required>
+                            <label for="CalidadCocina-Gd" class="option-button">Buena</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadCocina-TA" name="CalidadCocina" value="TA" required>
+                            <label for="CalidadCocina-TA" class="option-button">Estándar</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadCocina-Ex" name="CalidadCocina" value="Ex" required>
+                            <label for="CalidadCocina-Ex" class="option-button">Excelente</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadCocina-Fa" name="CalidadCocina" value="Fa" required>
+                            <label for="CalidadCocina-Fa" class="option-button">Regular</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 17: Calidad Sótano -->
+                <div class="step-container" id="step-17">
+                    <h2 class="step-title">Altura del Sótano</h2>
+                    <p class="step-description">¿Cómo es la altura del sótano?</p>
+                    <div class="option-buttons category-buttons">
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadSótano-Gd" name="CalidadSótano" value="Gd" required>
+                            <label for="CalidadSótano-Gd" class="option-button">Buena</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadSótano-TA" name="CalidadSótano" value="TA" required>
+                            <label for="CalidadSótano-TA" class="option-button">Estándar</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadSótano-Ex" name="CalidadSótano" value="Ex" required>
+                            <label for="CalidadSótano-Ex" class="option-button">Excelente</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadSótano-NoSótano" name="CalidadSótano" value="NoSótano" required>
+                            <label for="CalidadSótano-NoSótano" class="option-button">Sin Sótano</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="CalidadSótano-Fa" name="CalidadSótano" value="Fa" required>
+                            <label for="CalidadSótano-Fa" class="option-button">Regular</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Paso 18: Acabado Garaje -->
+                <div class="step-container" id="step-18">
+                    <h2 class="step-title">Acabado Interior del Garaje</h2>
+                    <p class="step-description">¿Qué tipo de acabado tiene el interior del garaje?</p>
+                    <div class="option-buttons category-buttons">
+                        <div class="option-wrapper">
+                            <input type="radio" id="AcabadoGaraje-RFn" name="AcabadoGaraje" value="RFn" required>
+                            <label for="AcabadoGaraje-RFn" class="option-button">Semi-acabado</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="AcabadoGaraje-Unf" name="AcabadoGaraje" value="Unf" required>
+                            <label for="AcabadoGaraje-Unf" class="option-button">Sin acabar</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="AcabadoGaraje-Fin" name="AcabadoGaraje" value="Fin" required>
+                            <label for="AcabadoGaraje-Fin" class="option-button">Acabado</label>
+                        </div>
+                        <div class="option-wrapper">
+                            <input type="radio" id="AcabadoGaraje-NoGaraje" name="AcabadoGaraje" value="NoGaraje" required>
+                            <label for="AcabadoGaraje-NoGaraje" class="option-button">Sin Garaje</label>
+                        </div>
+                    </div>
+                </div>
+                
+              <!-- Paso 19: Aire Acondicionado Central -->
+<div class="step-container" id="step-19">
+    <h2 class="step-title">Aire Acondicionado Central</h2>
+    <p class="step-description">¿La vivienda tiene aire acondicionado central?</p>
+    <div class="option-buttons category-buttons">
+        <div class="option-wrapper">
+            <input type="radio" id="AireAcondicionadoCentral-Y" name="AireAcondicionadoCentral" value="Y" required>
+            <label for="AireAcondicionadoCentral-Y" class="option-button">Sí</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="AireAcondicionadoCentral-N" name="AireAcondicionadoCentral" value="N" required>
+            <label for="AireAcondicionadoCentral-N" class="option-button">No</label>
+        </div>
     </div>
-    <hr>
-    <p><a href="{{ url_for('main.predict_page') }}" class="btn btn-secondary">Realizar otra predicción</a></p>
+</div>
 
-{% else %}
-    {# Mostrar el formulario si no hay resultado #}
-    <p>Introduce las características de la vivienda para obtener una predicción de su valor.</p>
-
-    {# --- Definimos las opciones para los SELECTS aquí (¡Excelente uso de {% set %}!) --- #}
-    {% set opciones_calidad_1_10 = range(1, 11) | list %}
-    {% set opciones_coches_garaje = range(0, 5) | list %}
-    {% set opciones_banos = range(0, 4) | list %}
-    {% set opciones_habitaciones = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14] %}
-    {% set opciones_chimeneas = range(0, 4) | list %}
-
-    {% set opciones_calidad_ext = ['Gd', 'TA', 'Ex', 'Fa'] %}
-    {% set opciones_calidad_cocina = ['Gd', 'TA', 'Ex', 'Fa'] %}
-    {% set opciones_calidad_sotano = ['Gd', 'TA', 'Ex', 'NoSótano', 'Fa'] %}
-    {% set opciones_acabado_garaje = ['RFn', 'Unf', 'Fin', 'NoGaraje'] %}
-    {% set opciones_ac = ['Y', 'N'] %}
-    {% set opciones_calidad_chimenea = ['NoTiene', 'TA', 'Gd', 'Fa', 'Ex', 'Po'] %}
-    {% set opciones_cimentacion = ['PConc', 'CBlock', 'BrkTil', 'Wood', 'Slab', 'Stone'] %}
-    {% set opciones_tipo_garaje = ['Attchd', 'Detchd', 'BuiltIn', 'CarPort', 'NoGaraje', 'Basment', '2Types'] %}
-    {% set opciones_tipo_revestimiento = ['BrkFace', 'Ninguno', 'Stone', 'BrkCmn'] %}
-    {% set opciones_calidad_calefaccion = ['Ex', 'Gd', 'TA', 'Fa', 'Po'] %}
-    {% set opciones_vecindario = ['CollgCr', 'Veenker', 'Crawfor', 'NoRidge', 'Mitchel', 'Somerst', 'NWAmes', 'OldTown', 'BrkSide', 'Sawyer', 'NridgHt', 'NAmes', 'SawyerW', 'IDOTRR', 'MeadowV', 'Edwards', 'Timber', 'Gilbert', 'StoneBr', 'ClearCr', 'NPkVill', 'Blmngtn', 'BrDale', 'SWISU', 'Blueste'] %}
-    {# ----------------------------------------------------- #}
-
-
-    <form method="POST" action="{{ url_for('main.predict_page') }}">
-
-        {# Inputs Numéricos #}
-        <h3>Características Numéricas Continuas</h3>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="MetrosHabitables" class="form-label">Metros Habitables:</label>
-                <input type="number" step="any" class="form-control" id="MetrosHabitables" name="MetrosHabitables" value="{{ form_data.get('MetrosHabitables', '') }}" required placeholder="Ej: 150.5">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="ÁreaGaraje" class="form-label">Área Garaje (m²):</label>
-                <input type="number" step="any" class="form-control" id="ÁreaGaraje" name="ÁreaGaraje" value="{{ form_data.get('ÁreaGaraje', '0') }}" required>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="MetrosTotalesSótano" class="form-label">Metros Totales Sótano (m²):</label>
-                <input type="number" step="any" class="form-control" id="MetrosTotalesSótano" name="MetrosTotalesSótano" value="{{ form_data.get('MetrosTotalesSótano', '0') }}" required>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="Metros1raPlanta" class="form-label">Metros 1ra Planta (m²):</label>
-                <input type="number" step="any" class="form-control" id="Metros1raPlanta" name="Metros1raPlanta" value="{{ form_data.get('Metros1raPlanta', '') }}" required placeholder="Ej: 85.0">
-            </div>
-             <div class="col-md-6 mb-3">
-                <label for="AñoConstrucción" class="form-label">Año Construcción:</label>
-                <input type="number" class="form-control" id="AñoConstrucción" name="AñoConstrucción" value="{{ form_data.get('AñoConstrucción', '') }}" placeholder="Ej: 1995" required min="1800" max="2025">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="AñoRenovación" class="form-label">Año Renovación (o construcción):</label>
-                <input type="number" class="form-control" id="AñoRenovación" name="AñoRenovación" value="{{ form_data.get('AñoRenovación', '') }}" placeholder="Ej: 2005" required min="1800" max="2025">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="ÁreaRevestimientoMampostería" class="form-label">Área Revest. Mampostería (m²):</label>
-                <input type="number" step="any" class="form-control" id="ÁreaRevestimientoMampostería" name="ÁreaRevestimientoMampostería" value="{{ form_data.get('ÁreaRevestimientoMampostería', '0') }}" required>
-            </div>
-             <div class="col-md-6 mb-3">
-                <label for="MetrosAcabadosSótano1" class="form-label">Metros Acabados Sótano Tipo 1 (m²):</label>
-                <input type="number" step="any" class="form-control" id="MetrosAcabadosSótano1" name="MetrosAcabadosSótano1" value="{{ form_data.get('MetrosAcabadosSótano1', '0') }}" required>
-            </div>
-             <div class="col-md-6 mb-3">
-                <label for="FrenteLote" class="form-label">Frente del Lote (lineal):</label> {# Ajustar unidad si es necesario #}
-                 {# --- CAMBIO: Añadido default 0 --- #}
-                <input type="number" step="any" class="form-control" id="FrenteLote" name="FrenteLote" value="{{ form_data.get('FrenteLote', '0') }}" required placeholder="Ej: 20.0">
-            </div>
+<!-- Paso 20: Calidad Chimenea -->
+<div class="step-container" id="step-20">
+    <h2 class="step-title">Calidad de la Chimenea</h2>
+    <p class="step-description">¿Cómo es la calidad de la chimenea? Si no hay chimenea, selecciona "Sin Chimenea".</p>
+    <div class="option-buttons category-buttons">
+        <div class="option-wrapper">
+            <input type="radio" id="CalidadChimenea-NoTiene" name="CalidadChimenea" value="NoTiene" required>
+            <label for="CalidadChimenea-NoTiene" class="option-button">Sin Chimenea</label>
         </div>
-        <hr>
-
-        {# Selects Numéricos Discretos #}
-        <h3>Ratings y Cantidades</h3>
-         <div class="row">
-             <div class="col-md-4 mb-3">
-                <label for="CalidadGeneral" class="form-label">Calidad General (1-10):</label>
-                <select class="form-select" id="CalidadGeneral" name="CalidadGeneral" required>
-                    <option value="" disabled selected>Selecciona...</option> {# Simplificado #}
-                    {% for i in opciones_calidad_1_10 %}
-                    <option value="{{ i }}" {% if form_data.get('CalidadGeneral') == i|string %}selected{% endif %}>{{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-4 mb-3">
-                <label for="CochesGaraje" class="form-label">Capacidad Garaje (Coches):</label>
-                <select class="form-select" id="CochesGaraje" name="CochesGaraje" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for i in opciones_coches_garaje %}
-                    <option value="{{ i }}" {% if form_data.get('CochesGaraje') == i|string %}selected{% endif %}>{{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-4 mb-3">
-                <label for="BañosCompletos" class="form-label">Baños Completos:</label>
-                <select class="form-select" id="BañosCompletos" name="BañosCompletos" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for i in opciones_banos %}
-                    <option value="{{ i }}" {% if form_data.get('BañosCompletos') == i|string %}selected{% endif %}>{{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="TotalHabitacionesSobreSuelo" class="form-label">Habitaciones sobre Suelo:</label> {# Texto ajustado #}
-                <select class="form-select" id="TotalHabitacionesSobreSuelo" name="TotalHabitacionesSobreSuelo" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for i in opciones_habitaciones %}
-                    <option value="{{ i }}" {% if form_data.get('TotalHabitacionesSobreSuelo') == i|string %}selected{% endif %}>{{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="Chimeneas" class="form-label">Número de Chimeneas:</label>
-                <select class="form-select" id="Chimeneas" name="Chimeneas" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for i in opciones_chimeneas %}
-                    <option value="{{ i }}" {% if form_data.get('Chimeneas') == i|string %}selected{% endif %}>{{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+        <div class="option-wrapper">
+            <input type="radio" id="CalidadChimenea-TA" name="CalidadChimenea" value="TA" required>
+            <label for="CalidadChimenea-TA" class="option-button">Estándar</label>
         </div>
-        <hr>
-
-        {# Selects Categóricos #}
-        <h3>Otras Características</h3> {# Título ajustado #}
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label for="CalidadExterior" class="form-label">Calidad Material Exterior:</label> {# Más descriptivo #}
-                <select class="form-select" id="CalidadExterior" name="CalidadExterior" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_calidad_ext %}
-                    <option value="{{ val }}" {% if form_data.get('CalidadExterior') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-4 mb-3">
-                <label for="CalidadCocina" class="form-label">Calidad Cocina:</label>
-                <select class="form-select" id="CalidadCocina" name="CalidadCocina" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_calidad_cocina %}
-                    <option value="{{ val }}" {% if form_data.get('CalidadCocina') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="CalidadSótano" class="form-label">Altura Sótano:</label> {# Más descriptivo #}
-                <select class="form-select" id="CalidadSótano" name="CalidadSótano" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_calidad_sotano %}
-                    <option value="{{ val }}" {% if form_data.get('CalidadSótano') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="AcabadoGaraje" class="form-label">Acabado Interior Garaje:</label> {# Más descriptivo #}
-                <select class="form-select" id="AcabadoGaraje" name="AcabadoGaraje" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_acabado_garaje %}
-                    <option value="{{ val }}" {% if form_data.get('AcabadoGaraje') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="AireAcondicionadoCentral" class="form-label">Aire Acondicionado Central:</label>
-                 <select class="form-select" id="AireAcondicionadoCentral" name="AireAcondicionadoCentral" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_ac %}
-                    <option value="{{ val }}" {% if form_data.get('AireAcondicionadoCentral') == val %}selected{% endif %}>{{ val }} ({{ 'Sí' if val == 'Y' else 'No' }})</option> {# Añadir Sí/No #}
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="CalidadChimenea" class="form-label">Calidad Chimenea:</label>
-                 <select class="form-select" id="CalidadChimenea" name="CalidadChimenea" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_calidad_chimenea %}
-                    <option value="{{ val }}" {% if form_data.get('CalidadChimenea') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-4 mb-3">
-                <label for="Cimentación" class="form-label">Tipo Cimentación:</label>
-                 <select class="form-select" id="Cimentación" name="Cimentación" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_cimentacion %}
-                    <option value="{{ val }}" {% if form_data.get('Cimentación') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="TipoGaraje" class="form-label">Tipo Garaje:</label>
-                 <select class="form-select" id="TipoGaraje" name="TipoGaraje" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_tipo_garaje %}
-                    <option value="{{ val }}" {% if form_data.get('TipoGaraje') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="TipoRevestimientoMampostería" class="form-label">Tipo Revest. Mampostería:</label>
-                 <select class="form-select" id="TipoRevestimientoMampostería" name="TipoRevestimientoMampostería" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_tipo_revestimiento %}
-                    <option value="{{ val }}" {% if form_data.get('TipoRevestimientoMampostería') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-4 mb-3">
-                <label for="CalidadCalefacción" class="form-label">Calidad Calefacción:</label>
-                 {# --- CORRECCIÓN: Typo en class --- #}
-                 <select class="form-select" id="CalidadCalefacción" name="CalidadCalefacción" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_calidad_calefaccion %}
-                    <option value="{{ val }}" {% if form_data.get('CalidadCalefacción') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-8 mb-3">
-                <label for="Vecindario" class="form-label">Vecindario:</label>
-                 <select class="form-select" id="Vecindario" name="Vecindario" required>
-                    <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_vecindario %}
-                    <option value="{{ val }}" {% if form_data.get('Vecindario') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div> {# Fin row categóricas #}
-
-        <hr>
-        <div class="d-grid gap-2"> {# Para que el botón ocupe todo el ancho si quieres #}
-            <button type="submit" class="btn btn-primary btn-lg">Predecir Valor de Vivienda</button>
+        <div class="option-wrapper">
+            <input type="radio" id="CalidadChimenea-Gd" name="CalidadChimenea" value="Gd" required>
+            <label for="CalidadChimenea-Gd" class="option-button">Buena</label>
         </div>
+        <div class="option-wrapper">
+            <input type="radio" id="CalidadChimenea-Fa" name="CalidadChimenea" value="Fa" required>
+            <label for="CalidadChimenea-Fa" class="option-button">Regular</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="CalidadChimenea-Ex" name="CalidadChimenea" value="Ex" required>
+            <label for="CalidadChimenea-Ex" class="option-button">Excelente</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="CalidadChimenea-Po" name="CalidadChimenea" value="Po" required>
+            <label for="CalidadChimenea-Po" class="option-button">Pobre</label>
+        </div>
+    </div>
+</div>
 
-    </form>
-{% endif %} {# Fin del else (mostrar formulario) #}
+<!-- Paso 21: Cimentación -->
+<div class="step-container" id="step-21">
+    <h2 class="step-title">Tipo de Cimentación</h2>
+    <p class="step-description">¿Qué tipo de cimentación tiene la vivienda?</p>
+    <div class="option-buttons category-buttons">
+        <div class="option-wrapper">
+            <input type="radio" id="Cimentación-PConc" name="Cimentación" value="PConc" required>
+            <label for="Cimentación-PConc" class="option-button">Concreto Vertido</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Cimentación-CBlock" name="Cimentación" value="CBlock" required>
+            <label for="Cimentación-CBlock" class="option-button">Bloques de Cemento</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Cimentación-BrkTil" name="Cimentación" value="BrkTil" required>
+            <label for="Cimentación-BrkTil" class="option-button">Ladrillo/Azulejo</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Cimentación-Wood" name="Cimentación" value="Wood" required>
+            <label for="Cimentación-Wood" class="option-button">Madera</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Cimentación-Slab" name="Cimentación" value="Slab" required>
+            <label for="Cimentación-Slab" class="option-button">Losa</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Cimentación-Stone" name="Cimentación" value="Stone" required>
+            <label for="Cimentación-Stone" class="option-button">Piedra</label>
+        </div>
+    </div>
+</div>
 
+<!-- Paso 22: Tipo Garaje -->
+<div class="step-container" id="step-22">
+    <h2 class="step-title">Tipo de Garaje</h2>
+    <p class="step-description">¿Qué tipo de garaje tiene la vivienda?</p>
+    <div class="option-buttons category-buttons">
+        <div class="option-wrapper">
+            <input type="radio" id="TipoGaraje-Attchd" name="TipoGaraje" value="Attchd" required>
+            <label for="TipoGaraje-Attchd" class="option-button">Adosado</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="TipoGaraje-Detchd" name="TipoGaraje" value="Detchd" required>
+            <label for="TipoGaraje-Detchd" class="option-button">Separado</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="TipoGaraje-BuiltIn" name="TipoGaraje" value="BuiltIn" required>
+            <label for="TipoGaraje-BuiltIn" class="option-button">Integrado</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="TipoGaraje-CarPort" name="TipoGaraje" value="CarPort" required>
+            <label for="TipoGaraje-CarPort" class="option-button">Carport</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="TipoGaraje-NoGaraje" name="TipoGaraje" value="NoGaraje" required>
+            <label for="TipoGaraje-NoGaraje" class="option-button">Sin Garaje</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="TipoGaraje-Basment" name="TipoGaraje" value="Basment" required>
+            <label for="TipoGaraje-Basment" class="option-button">En Sótano</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="TipoGaraje-2Types" name="TipoGaraje" value="2Types" required>
+            <label for="TipoGaraje-2Types" class="option-button">Combinado</label>
+        </div>
+    </div>
+</div>
+
+<!-- Paso 23: Tipo Revestimiento Mampostería -->
+<div class="step-container" id="step-23">
+    <h2 class="step-title">Tipo de Revestimiento de Mampostería</h2>
+    <p class="step-description">¿Qué tipo de revestimiento de mampostería tiene la vivienda?</p>
+    <div class="option-buttons category-buttons">
+        <div class="option-wrapper">
+            <input type="radio" id="TipoRevestimientoMampostería-BrkFace" name="TipoRevestimientoMampostería" value="BrkFace" required>
+            <label for="TipoRevestimientoMampostería-BrkFace" class="option-button">Ladrillo Vista</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="TipoRevestimientoMampostería-Ninguno" name="TipoRevestimientoMampostería" value="Ninguno" required>
+            <label for="TipoRevestimientoMampostería-Ninguno" class="option-button">Sin Revestimiento</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="TipoRevestimientoMampostería-Stone" name="TipoRevestimientoMampostería" value="Stone" required>
+            <label for="TipoRevestimientoMampostería-Stone" class="option-button">Piedra</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="TipoRevestimientoMampostería-BrkCmn" name="TipoRevestimientoMampostería" value="BrkCmn" required>
+            <label for="TipoRevestimientoMampostería-BrkCmn" class="option-button">Ladrillo Común</label>
+        </div>
+    </div>
+</div>
+
+<!-- Paso 24: Calidad Calefacción -->
+<div class="step-container" id="step-24">
+    <h2 class="step-title">Calidad del Sistema de Calefacción</h2>
+    <p class="step-description">¿Qué calidad tiene el sistema de calefacción?</p>
+    <div class="option-buttons category-buttons">
+        <div class="option-wrapper">
+            <input type="radio" id="CalidadCalefacción-Ex" name="CalidadCalefacción" value="Ex" required>
+            <label for="CalidadCalefacción-Ex" class="option-button">Excelente</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="CalidadCalefacción-Gd" name="CalidadCalefacción" value="Gd" required>
+            <label for="CalidadCalefacción-Gd" class="option-button">Buena</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="CalidadCalefacción-TA" name="CalidadCalefacción" value="TA" required>
+            <label for="CalidadCalefacción-TA" class="option-button">Estándar</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="CalidadCalefacción-Fa" name="CalidadCalefacción" value="Fa" required>
+            <label for="CalidadCalefacción-Fa" class="option-button">Regular</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="CalidadCalefacción-Po" name="CalidadCalefacción" value="Po" required>
+            <label for="CalidadCalefacción-Po" class="option-button">Pobre</label>
+        </div>
+    </div>
+</div>
+
+<!-- Paso 25: Vecindario -->
+<div class="step-container" id="step-25">
+    <h2 class="step-title">Vecindario</h2>
+    <p class="step-description">¿En qué vecindario se encuentra la vivienda?</p>
+    <div class="option-buttons category-buttons">
+        <!-- Solo se muestran algunos vecindarios para no hacer el código demasiado largo -->
+        <div class="option-wrapper">
+            <input type="radio" id="Vecindario-CollgCr" name="Vecindario" value="CollgCr" required>
+            <label for="Vecindario-CollgCr" class="option-button">College Creek</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Vecindario-Veenker" name="Vecindario" value="Veenker" required>
+            <label for="Vecindario-Veenker" class="option-button">Veenker</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Vecindario-Crawfor" name="Vecindario" value="Crawfor" required>
+            <label for="Vecindario-Crawfor" class="option-button">Crawford</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Vecindario-NoRidge" name="Vecindario" value="NoRidge" required>
+            <label for="Vecindario-NoRidge" class="option-button">Northridge</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Vecindario-Mitchel" name="Vecindario" value="Mitchel" required>
+            <label for="Vecindario-Mitchel" class="option-button">Mitchell</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Vecindario-StoneBr" name="Vecindario" value="StoneBr" required>
+            <label for="Vecindario-StoneBr" class="option-button">Stone Brook</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Vecindario-NWAmes" name="Vecindario" value="NWAmes" required>
+            <label for="Vecindario-NWAmes" class="option-button">Northwest Ames</label>
+        </div>
+        <div class="option-wrapper">
+            <input type="radio" id="Vecindario-OldTown" name="Vecindario" value="OldTown" required>
+            <label for="Vecindario-OldTown" class="option-button">Old Town</label>
+        </div>
+    </div>
+</div>
+
+<!-- Botones de navegación (movidos fuera de los steps) -->
+<div class="nav-buttons">
+    <button type="button" id="prev-btn" class="retro-btn btn-secondary">
+        <span class="btn-icon">◀</span> Anterior
+    </button>
+    <button type="button" id="next-btn" class="retro-btn btn-primary">
+        Siguiente <span class="btn-icon">▶</span>
+    </button>
+    <button type="submit" id="submit-btn" class="retro-btn btn-success">
+        ¡Calcular Precio! <span class="btn-icon">🏠</span>
+    </button>
+</div>
+
+</form>
+</div>
+
+<div class="info-panel" id="info-panel">
+    <!-- Contenido descriptivo (visible inicialmente) -->
+    <div id="description-content" class="description-content">
+        <h2>¡Bienvenido al futuro... desde los 90!</h2>
+        
+        <p>Santa Mónica, sol, palmeras, walkman en el bolsillo y una casa en el punto de mira.</p>
+        
+        <p>Introduce los datos, dale al botón y descubre si estás ante tu nuevo hogar... o solo soñando despierto.</p>
+        
+        <p>Sin complicaciones. Solo tú, la app y un toque de nostalgia.</p>
+        
+        <div class="beach-decoration"></div>
+        <div class="dot-decoration"></div>
+    </div>
+    
+    <!-- Contenido del resultado (oculto inicialmente) -->
+    <div id="result-content" class="result-content" style="display: none;">
+        <h2>¡Predicción Finalizada!</h2>
+        
+        <div class="price-display">
+            <span class="price-label">Valor estimado:</span>
+            <span class="price-value" id="predicted-value">$0.00</span>
+        </div>
+        
+        <div class="result-summary">
+            <h3>Características clave:</h3>
+            <ul id="key-features">
+                <!-- Se llenará dinámicamente -->
+            </ul>
+        </div>
+        
+        <button id="reset-form" class="retro-btn btn-secondary">
+            Realizar otra predicción <span class="btn-icon">🔄</span>
+        </button>
+        
+        <div class="result-decoration"></div>
+    </div>
+</div>
+</div><!-- Cierre del content-grid -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/california-predict.js') }}"></script>
 {% endblock %}
