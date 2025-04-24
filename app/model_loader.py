@@ -23,16 +23,13 @@ def _load_model_from_path(model_path):
             log.debug(f"Archivo PKL contenía un diccionario. Claves: {loaded_object.keys()}")
             if 'modelo' in loaded_object and hasattr(loaded_object['modelo'], 'predict'):
                  log.info("Diccionario validado: Contiene clave 'modelo' con un objeto predictivo.")
-                 # NO extraemos el modelo aquí, devolvemos el dict original
+                 
             else:
                 log.error("Diccionario en PKL no contiene clave 'modelo' o el valor no es un modelo predictivo.")
                 raise KeyError("Diccionario en PKL no tiene el formato esperado (falta 'modelo' predictivo).")
         # Si se cargó directamente el modelo (caso menos probable ahora)
         elif hasattr(loaded_object, 'predict'):
              log.warning("Archivo PKL contenía directamente un modelo, no un diccionario. Adaptando...")
-             # Crear un diccionario compatible para que el resto del código funcione
-             # ASUNCIÓN: Necesitarías cargar el scaler y listas de otro lado o hardcodearlos
-             # Esto es MENOS IDEAL. Lo mejor es que el PKL siempre tenga la misma estructura (dict).
              # loaded_object = {'modelo': loaded_object, 'scaler': None, ...} # Ejemplo
              raise TypeError("El PKL contenía solo el modelo, se esperaba un diccionario con componentes.")
         else:
@@ -41,7 +38,7 @@ def _load_model_from_path(model_path):
 
         log.info(f"Contenido PKL cargado y validado desde {model_path}")
         # Devolver el objeto cargado (que validamos es un diccionario con lo necesario)
-        return loaded_object # <--- ¡DEVUELVE EL DICCIONARIO COMPLETO!
+        return loaded_object 
 
     except FileNotFoundError:
          raise
