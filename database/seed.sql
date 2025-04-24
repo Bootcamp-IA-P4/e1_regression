@@ -1,5 +1,5 @@
 -- Datos iniciales para la base de datos (opcional)
-USE housing_prediction;
+USE housing_predictions;
 
 -- Usuario administrador (contraseña: admin123)
 INSERT INTO users (username, password_hash, email) 

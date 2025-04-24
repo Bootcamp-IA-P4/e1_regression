@@ -92,6 +92,7 @@ def predict_page():
             log.debug("Obteniendo componentes del modelo...")
             model_components = get_prediction_model()
             ames_model = model_components.get('modelo')
+            scaler = model_components.get('scaler')  # <-- Asegúrate de cargar el scaler
             variables_numericas_pkl = model_components.get('variables_numericas')       # Nombres PascalCase (del PKL)
             variables_categoricas_pkl = model_components.get('variables_categoricas_originales') # Nombres PascalCase (del PKL)
             variables_ohe_pkl = model_components.get('variables_categoricas_encoded') # Nombres OHE (del PKL)
@@ -135,6 +136,17 @@ def predict_page():
                 numeric_values_final_ordered.append(value)
                 log.debug(f"  -> Añadido Num: '{pkl_num_var}' (valor: {value})")
             log.debug(f"Lista Numérica Final Ordenada ({len(numeric_values_final_ordered)}): {numeric_values_final_ordered}")
+
+            # --- A.1. ESCALAR variables numéricas ---
+            # Convierte a DataFrame para aplicar el scaler
+            import pandas as pd
+            X_num_df = pd.DataFrame([dict(zip(variables_numericas_pkl, numeric_values_final_ordered))])
+            if scaler is not None:
+                X_num_scaled = scaler.transform(X_num_df)
+                log.debug(f"Numéricas escaladas: {X_num_scaled}")
+                numeric_values_final_ordered = X_num_scaled[0].tolist()
+            else:
+                log.warning("No se encontró scaler en el modelo. Usando valores sin escalar.")
 
 
             # --- B. Preparar DataFrame Categórico (Nombres PKL) ---
