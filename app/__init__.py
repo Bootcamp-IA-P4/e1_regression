@@ -5,8 +5,6 @@ from flask_mysqldb import MySQL
 from config import config_by_name
 import logging # Importar logging
 
-
-
 # Instancia de la extensión MySQL (sin inicializar app aún)
 mysql = MySQL()
 
@@ -30,6 +28,78 @@ def create_app(config_name=None):
     try:
         mysql.init_app(app)
         app.logger.info("Extensión MySQL inicializada.")
+        
+        # NUEVO CÓDIGO PARA CREAR LAS TABLAS
+        def init_db():
+            """Inicializa la base de datos si no existe"""
+            cursor = None  # Inicializar antes para evitar UnboundLocalError
+            
+            # Usar contexto de aplicación
+            with app.app_context():
+                try:
+                    cursor = mysql.connection.cursor()
+                    
+                    # Crear base de datos si no existe
+                    cursor.execute("CREATE DATABASE IF NOT EXISTS housing_predictions")
+                    cursor.execute("USE housing_predictions")
+                    
+                    # Crear tablas principales
+                    cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS properties (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        calidad_general INT NOT NULL,
+                        metros_habitables FLOAT NOT NULL,
+                        coches_garaje INT NOT NULL,
+                        area_garaje FLOAT NOT NULL,
+                        metros_totales_sotano FLOAT NOT NULL,
+                        metros_1ra_planta FLOAT NOT NULL,
+                        banos_completos INT NOT NULL,
+                        total_habitaciones_sobre_suelo INT NOT NULL,
+                        ano_construccion INT NOT NULL,
+                        ano_renovacion INT NOT NULL,
+                        area_revestimiento_mamposteria FLOAT NOT NULL,
+                        chimeneas INT NOT NULL,
+                        metros_acabados_sotano_1 FLOAT NOT NULL,
+                        frente_lote FLOAT NOT NULL,
+                        calidad_exterior VARCHAR(10) NOT NULL,
+                        calidad_cocina VARCHAR(10) NOT NULL,
+                        calidad_sotano VARCHAR(10) NOT NULL,
+                        acabado_garaje VARCHAR(10) NOT NULL,
+                        aire_acondicionado_central VARCHAR(2) NOT NULL,
+                        calidad_chimenea VARCHAR(10) NOT NULL,
+                        cimentacion VARCHAR(10) NOT NULL,
+                        tipo_garaje VARCHAR(10) NOT NULL,
+                        tipo_revestimiento_mamposteria VARCHAR(10) NOT NULL,
+                        calidad_calefaccion VARCHAR(10) NOT NULL,
+                        vecindario VARCHAR(20) NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """)
+                    
+                    cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS predictions (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        property_id INT NOT NULL,
+                        predicted_value FLOAT NOT NULL,
+                        actual_value FLOAT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
+                    )
+                    """)
+                    
+                    mysql.connection.commit()
+                    app.logger.info("Base de datos inicializada correctamente")
+                    
+                except Exception as e:
+                    app.logger.error(f"Error al inicializar la base de datos: {e}")
+                    
+                finally:
+                    if cursor:
+                        cursor.close()
+
+        # Llamar a la función para crear las tablas
+        init_db()
+        
     except Exception as e:
         app.logger.error(f"Error al inicializar MySQL: {e}", exc_info=True)
         raise # Es crítico si la BD no funciona
@@ -47,18 +117,7 @@ def create_app(config_name=None):
     # Registrar Blueprints
     from .routes import main_bp # Importación DENTRO de la función si hay dependencias circulares
     app.register_blueprint(main_bp) # SIN prefijo url_prefix si quieres que '/' funcione
-# Si pones app.register_blueprint(main_bp, url_prefix='/'), está bien también.
+    # Si pones app.register_blueprint(main_bp, url_prefix='/'), está bien también.
     app.logger.info("Blueprint 'main' registrado.")
-
-    # (Opcional) Registrar manejadores de error globales
-    # @app.errorhandler(404)
-    # def not_found_error(error):
-    #     return render_template('404.html'), 404
-    #
-    # @app.errorhandler(500)
-    # def internal_error(error):
-    #     # Podrías hacer rollback de la sesión de BD aquí si usas SQLAlchemy
-    #     return render_template('500.html'), 500
-
     app.logger.info("Aplicación creada exitosamente.")
     return app

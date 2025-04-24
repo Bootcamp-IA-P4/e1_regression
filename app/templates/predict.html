@@ -7,255 +7,277 @@
 
 {# Mostrar resultado si existe y no es None #}
 {% if prediction_saved and prediction_result is not none %}
-    <div class="alert alert-success">
-        <h2>¡Predicción Realizada!</h2>
-        {# --- CAMBIO: Formato de dólares --- #}
-        <p>El valor predicho para la vivienda con las características ingresadas es: <strong>${{ "{:,.2f}".format(prediction_result) }}</strong></p>
+<div class="alert alert-success">
+    <h2>¡Predicción Realizada!</h2>
+    <p>El valor predicho para la vivienda con las características ingresadas es: <strong>${{
+            "{:,.2f}".format(prediction_result) }}</strong></p>
 
-        {# --- CAMBIO: Mostrar input_data (procesados) en lugar de raw_form_data --- #}
-        <h3>Datos Utilizados (Validados):</h3>
-        <ul>
-            {% for key, value in input_data.items() %}
-                {# Formatear clave para legibilidad #}
-                <li><strong>{{ key|replace('_', ' ')|title }}:</strong> {{ value }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    <hr>
-    <p><a href="{{ url_for('main.predict_page') }}" class="btn btn-secondary">Realizar otra predicción</a></p>
+    <h3>Datos Utilizados (Validados):</h3>
+    <ul>
+        {% for key, value in input_data.items() %}
+        <li><strong>{{ key|replace('_', ' ')|title }}:</strong> {{ value }}</li>
+        {% endfor %}
+    </ul>
+</div>
+<hr>
+<p><a href="{{ url_for('main.predict_page') }}" class="btn btn-secondary">Realizar otra predicción</a></p>
 
 {% else %}
-    {# Mostrar el formulario si no hay resultado #}
-    <p>Introduce las características de la vivienda para obtener una predicción de su valor.</p>
+{# Mostrar el formulario si no hay resultado #}
+<p>Introduce las características de la vivienda para obtener una predicción de su valor.</p>
 
-    {# --- Definimos las opciones para los SELECTS aquí (¡Excelente uso de {% set %}!) --- #}
-    {% set opciones_calidad_1_10 = range(1, 11) | list %}
-    {% set opciones_coches_garaje = range(0, 5) | list %}
-    {% set opciones_banos = range(0, 4) | list %}
-    {% set opciones_habitaciones = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14] %}
-    {% set opciones_chimeneas = range(0, 4) | list %}
+{# --- Definimos las opciones para los SELECTS aquí --- #}
+{% set opciones_calidad_1_10 = range(1, 11) | list %}
+{% set opciones_coches_garaje = range(0, 5) | list %}
+{% set opciones_banos = range(0, 4) | list %}
+{% set opciones_habitaciones = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14] %}
+{% set opciones_chimeneas = range(0, 4) | list %}
 
-    {% set opciones_calidad_ext = ['Gd', 'TA', 'Ex', 'Fa'] %}
-    {% set opciones_calidad_cocina = ['Gd', 'TA', 'Ex', 'Fa'] %}
-    {% set opciones_calidad_sotano = ['Gd', 'TA', 'Ex', 'NoSótano', 'Fa'] %}
-    {% set opciones_acabado_garaje = ['RFn', 'Unf', 'Fin', 'NoGaraje'] %}
-    {% set opciones_ac = ['Y', 'N'] %}
-    {% set opciones_calidad_chimenea = ['NoTiene', 'TA', 'Gd', 'Fa', 'Ex', 'Po'] %}
-    {% set opciones_cimentacion = ['PConc', 'CBlock', 'BrkTil', 'Wood', 'Slab', 'Stone'] %}
-    {% set opciones_tipo_garaje = ['Attchd', 'Detchd', 'BuiltIn', 'CarPort', 'NoGaraje', 'Basment', '2Types'] %}
-    {% set opciones_tipo_revestimiento = ['BrkFace', 'Ninguno', 'Stone', 'BrkCmn'] %}
-    {% set opciones_calidad_calefaccion = ['Ex', 'Gd', 'TA', 'Fa', 'Po'] %}
-    {% set opciones_vecindario = ['CollgCr', 'Veenker', 'Crawfor', 'NoRidge', 'Mitchel', 'Somerst', 'NWAmes', 'OldTown', 'BrkSide', 'Sawyer', 'NridgHt', 'NAmes', 'SawyerW', 'IDOTRR', 'MeadowV', 'Edwards', 'Timber', 'Gilbert', 'StoneBr', 'ClearCr', 'NPkVill', 'Blmngtn', 'BrDale', 'SWISU', 'Blueste'] %}
-    {# ----------------------------------------------------- #}
+{% set opciones_calidad_ext = ['Gd', 'TA', 'Ex', 'Fa'] %}
+{% set opciones_calidad_cocina = ['Gd', 'TA', 'Ex', 'Fa'] %}
+{% set opciones_calidad_sotano = ['Gd', 'TA', 'Ex', 'NoSótano', 'Fa'] %}
+{% set opciones_acabado_garaje = ['RFn', 'Unf', 'Fin', 'NoGaraje'] %}
+{% set opciones_ac = ['Y', 'N'] %}
+{% set opciones_calidad_chimenea = ['NoTiene', 'TA', 'Gd', 'Fa', 'Ex', 'Po'] %}
+{% set opciones_cimentacion = ['PConc', 'CBlock', 'BrkTil', 'Wood', 'Slab', 'Stone'] %}
+{% set opciones_tipo_garaje = ['Attchd', 'Detchd', 'BuiltIn', 'CarPort', 'NoGaraje', 'Basment', '2Types'] %}
+{% set opciones_tipo_revestimiento = ['BrkFace', 'Ninguno', 'Stone', 'BrkCmn'] %}
+{% set opciones_calidad_calefaccion = ['Ex', 'Gd', 'TA', 'Fa', 'Po'] %}
+{% set opciones_vecindario = ['CollgCr', 'Veenker', 'Crawfor', 'NoRidge', 'Mitchel', 'Somerst', 'NWAmes', 'OldTown',
+'BrkSide', 'Sawyer', 'NridgHt', 'NAmes', 'SawyerW', 'IDOTRR', 'MeadowV', 'Edwards', 'Timber', 'Gilbert', 'StoneBr',
+'ClearCr', 'NPkVill', 'Blmngtn', 'BrDale', 'SWISU', 'Blueste'] %}
 
+<form method="POST" action="{{ url_for('main.predict_page') }}" class="prediction-form">
 
-    <form method="POST" action="{{ url_for('main.predict_page') }}">
-
-        {# Inputs Numéricos #}
-        <h3>Características Numéricas Continuas</h3>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="MetrosHabitables" class="form-label">Metros Habitables:</label>
-                <input type="number" step="any" class="form-control" id="MetrosHabitables" name="MetrosHabitables" value="{{ form_data.get('MetrosHabitables', '') }}" required placeholder="Ej: 150.5">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="ÁreaGaraje" class="form-label">Área Garaje (m²):</label>
-                <input type="number" step="any" class="form-control" id="ÁreaGaraje" name="ÁreaGaraje" value="{{ form_data.get('ÁreaGaraje', '0') }}" required>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="MetrosTotalesSótano" class="form-label">Metros Totales Sótano (m²):</label>
-                <input type="number" step="any" class="form-control" id="MetrosTotalesSótano" name="MetrosTotalesSótano" value="{{ form_data.get('MetrosTotalesSótano', '0') }}" required>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="Metros1raPlanta" class="form-label">Metros 1ra Planta (m²):</label>
-                <input type="number" step="any" class="form-control" id="Metros1raPlanta" name="Metros1raPlanta" value="{{ form_data.get('Metros1raPlanta', '') }}" required placeholder="Ej: 85.0">
-            </div>
-             <div class="col-md-6 mb-3">
-                <label for="AñoConstrucción" class="form-label">Año Construcción:</label>
-                <input type="number" class="form-control" id="AñoConstrucción" name="AñoConstrucción" value="{{ form_data.get('AñoConstrucción', '') }}" placeholder="Ej: 1995" required min="1800" max="2025">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="AñoRenovación" class="form-label">Año Renovación (o construcción):</label>
-                <input type="number" class="form-control" id="AñoRenovación" name="AñoRenovación" value="{{ form_data.get('AñoRenovación', '') }}" placeholder="Ej: 2005" required min="1800" max="2025">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="ÁreaRevestimientoMampostería" class="form-label">Área Revest. Mampostería (m²):</label>
-                <input type="number" step="any" class="form-control" id="ÁreaRevestimientoMampostería" name="ÁreaRevestimientoMampostería" value="{{ form_data.get('ÁreaRevestimientoMampostería', '0') }}" required>
-            </div>
-             <div class="col-md-6 mb-3">
-                <label for="MetrosAcabadosSótano1" class="form-label">Metros Acabados Sótano Tipo 1 (m²):</label>
-                <input type="number" step="any" class="form-control" id="MetrosAcabadosSótano1" name="MetrosAcabadosSótano1" value="{{ form_data.get('MetrosAcabadosSótano1', '0') }}" required>
-            </div>
-             <div class="col-md-6 mb-3">
-                <label for="FrenteLote" class="form-label">Frente del Lote (lineal):</label> {# Ajustar unidad si es necesario #}
-                 {# --- CAMBIO: Añadido default 0 --- #}
-                <input type="number" step="any" class="form-control" id="FrenteLote" name="FrenteLote" value="{{ form_data.get('FrenteLote', '0') }}" required placeholder="Ej: 20.0">
-            </div>
+    {# Inputs Numéricos #}
+    <h3>Características Numéricas Continuas</h3>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="metros_habitables" class="form-label">Metros Habitables:</label>
+            <input type="number" step="any" class="form-control" id="metros_habitables" name="metros_habitables"
+                value="{{ form_data.get('metros_habitables', '') }}" required>
         </div>
-        <hr>
-
-        {# Selects Numéricos Discretos #}
-        <h3>Ratings y Cantidades</h3>
-         <div class="row">
-             <div class="col-md-4 mb-3">
-                <label for="CalidadGeneral" class="form-label">Calidad General (1-10):</label>
-                <select class="form-select" id="CalidadGeneral" name="CalidadGeneral" required>
-                    <option value="" disabled selected>Selecciona...</option> {# Simplificado #}
-                    {% for i in opciones_calidad_1_10 %}
-                    <option value="{{ i }}" {% if form_data.get('CalidadGeneral') == i|string %}selected{% endif %}>{{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-4 mb-3">
-                <label for="CochesGaraje" class="form-label">Capacidad Garaje (Coches):</label>
-                <select class="form-select" id="CochesGaraje" name="CochesGaraje" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for i in opciones_coches_garaje %}
-                    <option value="{{ i }}" {% if form_data.get('CochesGaraje') == i|string %}selected{% endif %}>{{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-4 mb-3">
-                <label for="BañosCompletos" class="form-label">Baños Completos:</label>
-                <select class="form-select" id="BañosCompletos" name="BañosCompletos" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for i in opciones_banos %}
-                    <option value="{{ i }}" {% if form_data.get('BañosCompletos') == i|string %}selected{% endif %}>{{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="TotalHabitacionesSobreSuelo" class="form-label">Habitaciones sobre Suelo:</label> {# Texto ajustado #}
-                <select class="form-select" id="TotalHabitacionesSobreSuelo" name="TotalHabitacionesSobreSuelo" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for i in opciones_habitaciones %}
-                    <option value="{{ i }}" {% if form_data.get('TotalHabitacionesSobreSuelo') == i|string %}selected{% endif %}>{{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="Chimeneas" class="form-label">Número de Chimeneas:</label>
-                <select class="form-select" id="Chimeneas" name="Chimeneas" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for i in opciones_chimeneas %}
-                    <option value="{{ i }}" {% if form_data.get('Chimeneas') == i|string %}selected{% endif %}>{{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+        <div class="col-md-6 mb-3">
+            <label for="area_garaje" class="form-label">Área Garaje (m²):</label>
+            <input type="number" step="any" class="form-control" id="area_garaje" name="area_garaje"
+                value="{{ form_data.get('area_garaje', '0') }}" required>
         </div>
-        <hr>
-
-        {# Selects Categóricos #}
-        <h3>Otras Características</h3> {# Título ajustado #}
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label for="CalidadExterior" class="form-label">Calidad Material Exterior:</label> {# Más descriptivo #}
-                <select class="form-select" id="CalidadExterior" name="CalidadExterior" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_calidad_ext %}
-                    <option value="{{ val }}" {% if form_data.get('CalidadExterior') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-4 mb-3">
-                <label for="CalidadCocina" class="form-label">Calidad Cocina:</label>
-                <select class="form-select" id="CalidadCocina" name="CalidadCocina" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_calidad_cocina %}
-                    <option value="{{ val }}" {% if form_data.get('CalidadCocina') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="CalidadSótano" class="form-label">Altura Sótano:</label> {# Más descriptivo #}
-                <select class="form-select" id="CalidadSótano" name="CalidadSótano" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_calidad_sotano %}
-                    <option value="{{ val }}" {% if form_data.get('CalidadSótano') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="AcabadoGaraje" class="form-label">Acabado Interior Garaje:</label> {# Más descriptivo #}
-                <select class="form-select" id="AcabadoGaraje" name="AcabadoGaraje" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_acabado_garaje %}
-                    <option value="{{ val }}" {% if form_data.get('AcabadoGaraje') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="AireAcondicionadoCentral" class="form-label">Aire Acondicionado Central:</label>
-                 <select class="form-select" id="AireAcondicionadoCentral" name="AireAcondicionadoCentral" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_ac %}
-                    <option value="{{ val }}" {% if form_data.get('AireAcondicionadoCentral') == val %}selected{% endif %}>{{ val }} ({{ 'Sí' if val == 'Y' else 'No' }})</option> {# Añadir Sí/No #}
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="CalidadChimenea" class="form-label">Calidad Chimenea:</label>
-                 <select class="form-select" id="CalidadChimenea" name="CalidadChimenea" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_calidad_chimenea %}
-                    <option value="{{ val }}" {% if form_data.get('CalidadChimenea') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-4 mb-3">
-                <label for="Cimentación" class="form-label">Tipo Cimentación:</label>
-                 <select class="form-select" id="Cimentación" name="Cimentación" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_cimentacion %}
-                    <option value="{{ val }}" {% if form_data.get('Cimentación') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="TipoGaraje" class="form-label">Tipo Garaje:</label>
-                 <select class="form-select" id="TipoGaraje" name="TipoGaraje" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_tipo_garaje %}
-                    <option value="{{ val }}" {% if form_data.get('TipoGaraje') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="TipoRevestimientoMampostería" class="form-label">Tipo Revest. Mampostería:</label>
-                 <select class="form-select" id="TipoRevestimientoMampostería" name="TipoRevestimientoMampostería" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_tipo_revestimiento %}
-                    <option value="{{ val }}" {% if form_data.get('TipoRevestimientoMampostería') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-4 mb-3">
-                <label for="CalidadCalefacción" class="form-label">Calidad Calefacción:</label>
-                 {# --- CORRECCIÓN: Typo en class --- #}
-                 <select class="form-select" id="CalidadCalefacción" name="CalidadCalefacción" required>
-                     <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_calidad_calefaccion %}
-                    <option value="{{ val }}" {% if form_data.get('CalidadCalefacción') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-             <div class="col-md-8 mb-3">
-                <label for="Vecindario" class="form-label">Vecindario:</label>
-                 <select class="form-select" id="Vecindario" name="Vecindario" required>
-                    <option value="" disabled selected>Selecciona...</option>
-                    {% for val in opciones_vecindario %}
-                    <option value="{{ val }}" {% if form_data.get('Vecindario') == val %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div> {# Fin row categóricas #}
-
-        <hr>
-        <div class="d-grid gap-2"> {# Para que el botón ocupe todo el ancho si quieres #}
-            <button type="submit" class="btn btn-primary btn-lg">Predecir Valor de Vivienda</button>
+        <div class="col-md-6 mb-3">
+            <label for="metros_totales_sotano" class="form-label">Metros Totales Sótano (m²):</label>
+            <input type="number" step="any" class="form-control" id="metros_totales_sotano" name="metros_totales_sotano"
+                value="{{ form_data.get('metros_totales_sotano', '0') }}" required>
         </div>
+        <div class="col-md-6 mb-3">
+            <label for="metros_1ra_planta" class="form-label">Metros 1ra Planta (m²):</label>
+            <input type="number" step="any" class="form-control" id="metros_1ra_planta" name="metros_1ra_planta"
+                value="{{ form_data.get('metros_1ra_planta', '') }}" required placeholder="Ej: 85.0">
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="ano_construccion" class="form-label">Año Construcción:</label>
+            <input type="number" class="form-control" id="ano_construccion" name="ano_construccion"
+                value="{{ form_data.get('ano_construccion', '') }}" placeholder="Ej: 1995" required min="1800"
+                max="2025">
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="ano_renovacion" class="form-label">Año Renovación (o construcción):</label>
+            <input type="number" class="form-control" id="ano_renovacion" name="ano_renovacion"
+                value="{{ form_data.get('ano_renovacion', '') }}" placeholder="Ej: 2005" required min="1800" max="2025">
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="area_revestimiento_mamposteria" class="form-label">Área Revest. Mampostería (m²):</label>
+            <input type="number" step="any" class="form-control" id="area_revestimiento_mamposteria"
+                name="area_revestimiento_mamposteria" value="{{ form_data.get('area_revestimiento_mamposteria', '0') }}"
+                required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="metros_acabados_sotano_1" class="form-label">Metros Acabados Sótano Tipo 1 (m²):</label>
+            <input type="number" step="any" class="form-control" id="metros_acabados_sotano_1" name="metros_acabados_sotano_1"
+                value="{{ form_data.get('metros_acabados_sotano_1', '0') }}" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="frente_lote" class="form-label">Frente del Lote (lineal):</label>
+            <input type="number" step="any" class="form-control" id="frente_lote" name="frente_lote"
+                value="{{ form_data.get('frente_lote', '0') }}" required placeholder="Ej: 20.0">
+        </div>
+    </div>
+    <hr>
 
-    </form>
-{% endif %} {# Fin del else (mostrar formulario) #}
+    {# Selects Numéricos Discretos #}
+    <h3>Ratings y Cantidades</h3>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="calidad_general" class="form-label">Calidad General (1-10):</label>
+            <select class="form-select" id="calidad_general" name="calidad_general" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for i in opciones_calidad_1_10 %}
+                <option value="{{ i }}" {% if form_data.get('calidad_general')==i|string %}selected{% endif %}>{{ i }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="coches_garaje" class="form-label">Capacidad Garaje (Coches):</label>
+            <select class="form-select" id="coches_garaje" name="coches_garaje" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for i in opciones_coches_garaje %}
+                <option value="{{ i }}" {% if form_data.get('coches_garaje')==i|string %}selected{% endif %}>{{ i }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="banos_completos" class="form-label">Baños Completos:</label>
+            <select class="form-select" id="banos_completos" name="banos_completos" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for i in opciones_banos %}
+                <option value="{{ i }}" {% if form_data.get('banos_completos')==i|string %}selected{% endif %}>{{ i }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="total_habitaciones_sobre_suelo" class="form-label">Habitaciones sobre Suelo:</label>
+            <select class="form-select" id="total_habitaciones_sobre_suelo" name="total_habitaciones_sobre_suelo" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for i in opciones_habitaciones %}
+                <option value="{{ i }}" {% if form_data.get('total_habitaciones_sobre_suelo')==i|string %}selected{% endif
+                    %}>{{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="chimeneas" class="form-label">Número de Chimeneas:</label>
+            <select class="form-select" id="chimeneas" name="chimeneas" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for i in opciones_chimeneas %}
+                <option value="{{ i }}" {% if form_data.get('chimeneas')==i|string %}selected{% endif %}>{{ i }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <hr>
+
+    {# Selects Categóricos #}
+    <h3>Otras Características</h3>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="calidad_exterior" class="form-label">Calidad Material Exterior:</label>
+            <select class="form-select" id="calidad_exterior" name="calidad_exterior" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for val in opciones_calidad_ext %}
+                <option value="{{ val }}" {% if form_data.get('calidad_exterior')==val %}selected{% endif %}>{{ val }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="calidad_cocina" class="form-label">Calidad Cocina:</label>
+            <select class="form-select" id="calidad_cocina" name="calidad_cocina" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for val in opciones_calidad_cocina %}
+                <option value="{{ val }}" {% if form_data.get('calidad_cocina')==val %}selected{% endif %}>{{ val }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="calidad_sotano" class="form-label">Altura Sótano:</label>
+            <select class="form-select" id="calidad_sotano" name="calidad_sotano" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for val in opciones_calidad_sotano %}
+                <option value="{{ val }}" {% if form_data.get('calidad_sotano')==val %}selected{% endif %}>{{ val }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="acabado_garaje" class="form-label">Acabado Interior Garaje:</label>
+            <select class="form-select" id="acabado_garaje" name="acabado_garaje" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for val in opciones_acabado_garaje %}
+                <option value="{{ val }}" {% if form_data.get('acabado_garaje')==val %}selected{% endif %}>{{ val }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="aire_acondicionado_central" class="form-label">Aire Acondicionado Central:</label>
+            <select class="form-select" id="aire_acondicionado_central" name="aire_acondicionado_central" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for val in opciones_ac %}
+                <option value="{{ val }}" {% if form_data.get('aire_acondicionado_central')==val %}selected{% endif %}>{{
+                    val }} ({{ 'Sí' if val == 'Y' else 'No' }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="calidad_chimenea" class="form-label">Calidad Chimenea:</label>
+            <select class="form-select" id="calidad_chimenea" name="calidad_chimenea" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for val in opciones_calidad_chimenea %}
+                <option value="{{ val }}" {% if form_data.get('calidad_chimenea')==val %}selected{% endif %}>{{ val }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="cimentacion" class="form-label">Tipo Cimentación:</label>
+            <select class="form-select" id="cimentacion" name="cimentacion" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for val in opciones_cimentacion %}
+                <option value="{{ val }}" {% if form_data.get('cimentacion')==val %}selected{% endif %}>{{ val }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="tipo_garaje" class="form-label">Tipo Garaje:</label>
+            <select class="form-select" id="tipo_garaje" name="tipo_garaje" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for val in opciones_tipo_garaje %}
+                <option value="{{ val }}" {% if form_data.get('tipo_garaje')==val %}selected{% endif %}>{{ val }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="tipo_revestimiento_mamposteria" class="form-label">Tipo Revest. Mampostería:</label>
+            <select class="form-select" id="tipo_revestimiento_mamposteria" name="tipo_revestimiento_mamposteria" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for val in opciones_tipo_revestimiento %}
+                <option value="{{ val }}" {% if form_data.get('tipo_revestimiento_mamposteria')==val %}selected{% endif
+                    %}>{{ val }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="calidad_calefaccion" class="form-label">Calidad Calefacción:</label>
+            <select class="form-select" id="calidad_calefaccion" name="calidad_calefaccion" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for val in opciones_calidad_calefaccion %}
+                <option value="{{ val }}" {% if form_data.get('calidad_calefaccion')==val %}selected{% endif %}>{{ val }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-8 mb-3">
+            <label for="vecindario" class="form-label">Vecindario:</label>
+            <select class="form-select" id="vecindario" name="vecindario" required>
+                <option value="" disabled selected>Selecciona...</option>
+                {% for val in opciones_vecindario %}
+                <option value="{{ val }}" {% if form_data.get('vecindario')==val %}selected{% endif %}>{{ val }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <hr>
+    <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary btn-lg">Predecir Valor de Vivienda</button>
+    </div>
+</form>
+{% endif %}
 
 {% endblock %}

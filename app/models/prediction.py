@@ -41,127 +41,87 @@ class Prediction:
         return cls(**row)
 
     def save(self):
-        """
-        Guarda una NUEVA predicción. Actualizar predicciones generalmente no tiene sentido.
-        """
+        """Guarda una NUEVA predicción."""
         if self.id:
             log.warning(f"Intento de actualizar Prediction ID {self.id}. Esta operación no está soportada.")
-            # Podrías implementar la actualización si realmente la necesitas, pero es inusual.
-            # raise NotImplementedError("La actualización de predicciones no está implementada.")
-            return self # O devolver None/lanzar error
+            return self
 
         if not self.property_id:
-             raise ValueError("Se requiere 'property_id' para guardar una Prediction.")
+            raise ValueError("Se requiere 'property_id' para guardar una Prediction.")
 
         data_to_save = {
             'property_id': self.property_id,
             'predicted_value': self.predicted_value,
             'actual_value': self.actual_value
-            # 'created_at' lo maneja la BD o lo podemos pasar explícitamente si lo tenemos:
-            # 'created_at': self.created_at
         }
+        
         # Quitar 'actual_value' si es None para depender del default NULL de la tabla
         if data_to_save['actual_value'] is None:
-             data_to_save.pop('actual_value', None)
+            del data_to_save['actual_value']
 
         try:
-            last_id = insert_and_get_id('predictions', data_to_save)
-            if last_id:
-                self.id = last_id
-                # No podemos obtener created_at de la BD aquí fácilmente sin otra consulta.
-                # Si lo necesitamos actualizado, tendríamos que hacer un find_by_id(last_id)
-                log.info(f"Nueva Prediction creada con ID: {self.id} para Property ID: {self.property_id}")
-            else:
-                 log.error("insert_and_get_id devolvió None/0 sin lanzar excepción para Prediction.")
-                 return None
+            self.id = insert_and_get_id('predictions', data_to_save)
+            log.info(f"Nueva predicción guardada con ID: {self.id}")
             return self
         except Exception as e:
-            log.exception(f"Error al guardar Prediction para Property ID {self.property_id}: {e}")
+            log.error(f"Error al guardar predicción: {e}")
             raise
 
     @classmethod
     def find_by_id(cls, prediction_id):
         """Busca una predicción por su ID."""
-        query = "SELECT * FROM `predictions` WHERE `id` = %s"
-        try:
-            result_row = execute_query(query, (prediction_id,), fetch_one=True)
-            return cls._from_db_row(result_row)
-        except Exception as e:
-            log.exception(f"Error al buscar Prediction por ID {prediction_id}: {e}")
-            return None
+        query = "SELECT * FROM predictions WHERE id = %s"
+        row = execute_query(query, (prediction_id,), fetch_one=True)
+        return cls._from_db_row(row) if row else None
 
     @classmethod
     def get_recent_with_property(cls, limit=10):
-        """
-        Obtiene las predicciones más recientes junto con los datos de la propiedad asociada.
-        Devuelve una lista de diccionarios combinados directamente desde la BD.
-        """
+        """Obtiene predicciones recientes con datos de la propiedad asociada."""
         query = """
-            SELECT
-                p.id AS prediction_id, p.property_id, p.predicted_value,
-                p.actual_value, p.created_at AS prediction_created_at,
-                pr.* -- Selecciona todas las columnas de properties
-            FROM predictions p
-            JOIN properties pr ON p.property_id = pr.id
-            ORDER BY p.created_at DESC
-            LIMIT %s
+        SELECT 
+            p.id, p.property_id, p.predicted_value, p.actual_value, 
+            p.created_at as prediction_created_at,
+            pr.calidad_general AS CalidadGeneral, 
+            pr.metros_habitables AS MetrosHabitables,
+            pr.coches_garaje AS CochesGaraje,
+            pr.banos_completos AS BañosCompletos,
+            pr.total_habitaciones_sobre_suelo AS TotalHabitacionesSobreSuelo,
+            pr.ano_construccion AS AñoConstrucción,
+            pr.vecindario AS Vecindario
+        FROM predictions p
+        JOIN properties pr ON p.property_id = pr.id
+        ORDER BY p.created_at DESC
+        LIMIT %s
         """
-        try:
-            # execute_query con fetch_all=True y DictCursor devolverá lista de diccionarios
-            results = execute_query(query, (limit,), fetch_all=True)
-            log.debug(f"Obtenidas {len(results) if results else 0} predicciones recientes con propiedad.")
-            return results if results else []
-        except Exception as e:
-            log.exception(f"Error al obtener predicciones recientes con propiedad: {e}")
-            return []
+        results = execute_query(query, (limit,), fetch_all=True)
+        return results  # Devolvemos directamente el diccionario para usar en templates
 
     @classmethod
     def create_for_property(cls, property_instance, predicted_value, actual_value=None):
-         """Crea y guarda una predicción para una instancia de Property existente."""
-         if not property_instance or not property_instance.id:
-             raise ValueError("Se requiere una instancia de Property válida y guardada (con ID).")
-
-         prediction = cls(
-             property_id=property_instance.id,
-             predicted_value=predicted_value,
-             actual_value=actual_value
-         )
-         return prediction.save()
+        """Crea una predicción para una propiedad existente."""
+        if not property_instance.id:
+            raise ValueError("La propiedad debe estar guardada (tener ID) antes de crear una predicción")
+        
+        prediction = cls(
+            property_id=property_instance.id,
+            predicted_value=predicted_value,
+            actual_value=actual_value
+        )
+        return prediction.save()
 
     @classmethod
     def create_from_data(cls, property_data: dict, prediction_data: dict):
-        """
-        (Alternativa a create_and_save original)
-        1. Crea y guarda la propiedad desde `property_data`.
-        2. Crea y guarda la predicción desde `prediction_data`, usando el ID de la propiedad creada.
-
-        Retorna: Tupla (saved_property, saved_prediction) o (None, None) en error.
-        """
-        saved_property = None
-        saved_prediction = None
-        try:
-            # Crear y guardar propiedad
-            saved_property = Property.create(**property_data) # Usa el classmethod de Property
-            if not saved_property:
-                log.error("Falló la creación/guardado de Property en create_from_data.")
-                return None, None # Propiedad no se pudo guardar
-
-            # Crear y guardar predicción
-            prediction_instance = cls(
-                property_id=saved_property.id,
-                predicted_value=prediction_data.get('predicted_value'),
-                actual_value=prediction_data.get('actual_value')
-            )
-            saved_prediction = prediction_instance.save()
-            if not saved_prediction:
-                 log.error(f"Falló el guardado de Prediction para Property ID {saved_property.id}")
-                 # Considerar si deshacer la creación de la propiedad (Transacción?)
-                 # Por ahora, la propiedad queda creada pero la predicción falló.
-                 return saved_property, None # Devuelve la propiedad creada pero None para predicción
-
-            return saved_property, saved_prediction
-
-        except Exception as e:
-            log.exception("Error durante Prediction.create_from_data", exc_info=True)
-            # Devuelve lo que se haya podido crear (puede ser None, None)
-            return saved_property, saved_prediction
+        """Crea una propiedad y una predicción asociada en una sola operación."""
+        from .property import Property  # Importación local para evitar circular imports
+        
+        # Crear y guardar la propiedad
+        property_instance = Property(**property_data)
+        property_instance.save()
+        
+        # Crear y guardar la predicción
+        prediction = cls(
+            property_id=property_instance.id,
+            predicted_value=prediction_data.get('predicted_value'),
+            actual_value=prediction_data.get('actual_value')
+        )
+        return prediction.save()
