@@ -6,6 +6,7 @@
     <div class="content-grid">
         <!-- Panel izquierdo (formulario) -->
         <div class="form-panel">
+            <div class="form-content">
             <h1 class="retro-title">Calculadora de Precios</h1>
             
             <!-- Barra de progreso animada con zigzag -->
@@ -683,46 +684,48 @@
         ¡Calcular Precio! <span class="btn-icon">🏠</span>
     </button>
 </div>
-
 </form>
+</div>
 </div>
 
 <div class="info-panel" id="info-panel">
-    <!-- Contenido descriptivo (visible inicialmente) -->
-    <div id="description-content" class="description-content">
-        <h2>¡Bienvenido al futuro... desde los 90!</h2>
-        
-        <p>Santa Mónica, sol, palmeras, walkman en el bolsillo y una casa en el punto de mira.</p>
-        
-        <p>Introduce los datos, dale al botón y descubre si estás ante tu nuevo hogar... o solo soñando despierto.</p>
-        
-        <p>Sin complicaciones. Solo tú, la app y un toque de nostalgia.</p>
-        
-        <div class="beach-decoration"></div>
-        <div class="dot-decoration"></div>
-    </div>
-    
-    <!-- Contenido del resultado (oculto inicialmente) -->
-    <div id="result-content" class="result-content" style="display: none;">
-        <h2>¡Predicción Finalizada!</h2>
-        
-        <div class="price-display">
-            <span class="price-label">Valor estimado:</span>
-            <span class="price-value" id="predicted-value">$0.00</span>
+    <div class="info-content">
+        <!-- Contenido descriptivo (visible inicialmente) -->
+        <div id="description-content" class="description-content">
+            <h2>¡Bienvenido al futuro... desde los 90!</h2>
+            
+            <p>Santa Mónica, sol, palmeras, walkman en el bolsillo y una casa en el punto de mira.</p>
+            
+            <p>Introduce los datos, dale al botón y descubre si estás ante tu nuevo hogar... o solo soñando despierto.</p>
+            
+            <p>Sin complicaciones. Solo tú, la app y un toque de nostalgia.</p>
+            
+            <div class="beach-decoration"></div>
+            <div class="dot-decoration"></div>
         </div>
         
-        <div class="result-summary">
-            <h3>Características clave:</h3>
-            <ul id="key-features">
-                <!-- Se llenará dinámicamente -->
-            </ul>
+        <!-- Contenido del resultado (oculto inicialmente) -->
+        <div id="result-content" class="result-content" style="display: none;">
+            <h2>¡Predicción Finalizada!</h2>
+            
+            <div class="price-display">
+                <span class="price-label">Valor estimado:</span>
+                <span class="price-value" id="predicted-value">$0.00</span>
+            </div>
+            
+            <div class="result-summary">
+                <h3>Características clave:</h3>
+                <ul id="key-features">
+                    <!-- Se llenará dinámicamente -->
+                </ul>
+            </div>
+            
+            <button id="reset-form" class="retro-btn btn-secondary">
+                Realizar otra predicción <span class="btn-icon">🔄</span>
+            </button>
+            
+            <div class="result-decoration"></div>
         </div>
-        
-        <button id="reset-form" class="retro-btn btn-secondary">
-            Realizar otra predicción <span class="btn-icon">🔄</span>
-        </button>
-        
-        <div class="result-decoration"></div>
     </div>
 </div>
 </div><!-- Cierre del content-grid -->

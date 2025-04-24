@@ -1,7 +1,3 @@
-/**
- * California Dreamin' - Formulario de Pasarela para Predicción de Valor de Vivienda
- * Estilo retro años 90
- */
 document.addEventListener('DOMContentLoaded', function() {
     // Verificar si estamos en la página del formulario
     const formWizard = document.getElementById('housing-wizard-form');
@@ -196,66 +192,171 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Maneja el envío del formulario para mostrar resultados
+     * Maneja el envío del formulario para la predicción del modelo ML
      */
     function handleSubmitForm(e) {
-        // Si no pasamos la validación, prevenir envío
+        e.preventDefault(); // Prevenir el envío tradicional del formulario
+        
+        // Validar el paso actual antes de enviar
         if (!validateCurrentStep()) {
-            e.preventDefault();
             return;
         }
         
-        // En entorno de demostración, prevenimos el envío real y mostramos una simulación
-        // En producción, este bloque se puede comentar para permitir el envío real al servidor
-        e.preventDefault();
+        // Mostrar indicador de carga
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'loading-indicator';
+        loadingIndicator.innerHTML = '<p>Calculando predicción...</p><div class="spinner"></div>';
+        document.querySelector('.form-panel').appendChild(loadingIndicator);
         
-        // Ocultar el formulario
-        formWizard.style.display = 'none';
+        // Recolectar todos los datos del formulario
+        const formData = new FormData(formWizard);
+        const jsonData = {};
         
-        // Mostrar el panel de resultados
-        document.getElementById('description-content').style.display = 'none';
-        const resultContent = document.getElementById('result-content');
-        resultContent.style.display = 'block';
+        // Convertir FormData a objeto JSON
+        formData.forEach((value, key) => {
+            // Para campos numéricos, convertir a número
+            if (!isNaN(value) && value.trim() !== '') {
+                jsonData[key] = parseFloat(value);
+            } else {
+                jsonData[key] = value;
+            }
+        });
         
-        // Generar un precio simulado
-        const predictedValue = Math.floor(Math.random() * 500000) + 200000;
-        document.getElementById('predicted-value').textContent = '$' + predictedValue.toLocaleString();
+        // URL del endpoint de tu API/modelo ML
+        const apiUrl = '/api/predict'; // Ajusta esta URL según tu backend
         
-        // Mostrar características clave
-        showKeyFeatures();
+        // Enviar datos al modelo ML mediante AJAX
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Ocultar formulario
+            formWizard.style.display = 'none';
+            
+            // Mostrar el panel de resultados
+            document.getElementById('description-content').style.display = 'none';
+            const resultContent = document.getElementById('result-content');
+            resultContent.style.display = 'block';
+            
+            // Mostrar el valor predicho con formato de moneda
+            const predictedValueElement = document.getElementById('predicted-value');
+            predictedValueElement.textContent = formatCurrency(data.prediction);
+            
+            // Mostrar intervalo de confianza si está disponible
+            if (data.confidence_interval) {
+                const confidenceElement = document.getElementById('confidence-interval');
+                confidenceElement.textContent = `(${formatCurrency(data.confidence_interval[0])} - ${formatCurrency(data.confidence_interval[1])})`;
+                confidenceElement.style.display = 'block';
+            }
+            
+            // Mostrar características clave utilizadas en la predicción
+            displayFeatures(jsonData);
+            
+            // Mostrar mensaje adicional basado en el valor predicho
+            displayAdditionalInfo(data.prediction);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ha ocurrido un error al procesar la predicción. Por favor, inténtelo de nuevo.');
+        })
+        .finally(() => {
+            // Eliminar indicador de carga
+            loadingIndicator.remove();
+        });
     }
     
     /**
-     * Muestra las características clave de la vivienda
+     * Función auxiliar para formatear valores monetarios
      */
-    function showKeyFeatures() {
+    function formatCurrency(value) {
+        return '$' + value.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+    
+    /**
+     * Función para mostrar información adicional basada en el valor predicho
+     */
+    function displayAdditionalInfo(predictedValue) {
+        const infoElement = document.getElementById('additional-info');
+        let message = '';
+        
+        if (predictedValue > 500000) {
+            message = '¡Propiedad de lujo! Esta vivienda está en el top 10% del mercado.';
+        } else if (predictedValue > 300000) {
+            message = 'Propiedad de gama alta. Excelente inversión para familias.';
+        } else if (predictedValue > 150000) {
+            message = 'Vivienda estándar. Buen equilibrio entre precio y comodidad.';
+        } else {
+            message = 'Oportunidad de inversión. Propiedad con buen potencial de revalorización.';
+        }
+        
+        infoElement.textContent = message;
+    }
+    
+    /**
+     * Muestra las características utilizadas en la predicción
+     */
+    function displayFeatures(inputData) {
         const keyFeatures = document.getElementById('key-features');
         keyFeatures.innerHTML = ''; // Limpiar lista
         
-        // Características importantes a mostrar
-        const features = [
-            { name: 'CalidadGeneral', label: 'Calidad General' },
-            { name: 'MetrosHabitables', label: 'Área Habitable', unit: 'm²' },
-            { name: 'TotalHabitacionesSobreSuelo', label: 'Habitaciones' },
-            { name: 'BañosCompletos', label: 'Baños' },
-            { name: 'AñoConstrucción', label: 'Año de Construcción' },
-            { name: 'Vecindario', label: 'Vecindario' }
+        // Mapeo de nombres de características a etiquetas más legibles
+        const featureLabels = {
+            'CalidadGeneral': 'Calidad General',
+            'MetrosHabitables': 'Área Habitable',
+            'TotalHabitacionesSobreSuelo': 'Habitaciones',
+            'BañosCompletos': 'Baños',
+            'AñoConstrucción': 'Año de Construcción',
+            'Vecindario': 'Vecindario',
+            'CochesGaraje': 'Espacios de Garaje',
+            'Chimeneas': 'Número de Chimeneas',
+            'MetrosTotalesSótano': 'Área de Sótano'
+        };
+        
+        // Unidades para ciertas características
+        const featureUnits = {
+            'MetrosHabitables': ' m²',
+            'ÁreaGaraje': ' m²',
+            'MetrosTotalesSótano': ' m²',
+            'Metros1raPlanta': ' m²',
+            'ÁreaRevestimientoMampostería': ' m²',
+            'MetrosAcabadosSótano1': ' m²',
+            'FrenteLote': ' m'
+        };
+        
+        // Mostrar las características más importantes
+        const importantFeatures = [
+            'CalidadGeneral', 
+            'MetrosHabitables', 
+            'TotalHabitacionesSobreSuelo', 
+            'BañosCompletos', 
+            'AñoConstrucción', 
+            'Vecindario',
+            'CochesGaraje',
+            'Chimeneas',
+            'MetrosTotalesSótano'
         ];
         
-        // Obtener valores y agregar a la lista
-        features.forEach(feature => {
-            let value;
-            try {
-                value = feature.name === 'Vecindario' 
-                    ? document.querySelector(`input[name="${feature.name}"]:checked + label`).textContent
-                    : getSelectedValueById(feature.name) || document.getElementById(feature.name).value;
-            } catch (e) {
-                value = "No especificado";
-            }
-                
-            if (value) {
+        importantFeatures.forEach(feature => {
+            if (inputData.hasOwnProperty(feature)) {
                 const li = document.createElement('li');
-                li.innerHTML = `<strong>${feature.label}:</strong> ${value}${feature.unit || ''}`;
+                const displayValue = typeof inputData[feature] === 'number' && featureUnits[feature] 
+                    ? inputData[feature] + featureUnits[feature] 
+                    : inputData[feature];
+                
+                li.innerHTML = `<strong>${featureLabels[feature] || feature}:</strong> ${displayValue}`;
                 keyFeatures.appendChild(li);
             }
         });
@@ -355,4 +456,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar el formulario
     updateStep();
-  });
+});

@@ -1,8 +1,7 @@
-/* California Dreamin' - Estilos Retro 90s */
 @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;500;700&display=swap');
 
 :root {
-  --color-coral: #ff7f50;
+  --color-coral: #F98F6D;
   --color-coral-light: #ff9e7a;
   --color-coral-dark: #e55a2b;
   --color-teal: #4ecdc4;
@@ -57,19 +56,37 @@ body {
 /* Grid layout para contenido principal */
 .content-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  margin-bottom: 50px;
+  grid-template-columns: 60% 40%; /* 60% form, 40% info */
+}
+
+/* Paneles comunes */
+.form-panel,
+.info-panel {
+  position: relative;
+  box-shadow: var(--shadow-retro);
+  overflow: hidden;
+  min-height: 800px; 
+}
+
+/* Contenido interno común */
+.form-content,
+.info-content {
+  padding: 30px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
 }
 
 /* Panel del formulario */
 .form-panel {
   background-color: var(--color-coral);
-  border-radius: 15px;
-  padding: 30px;
-  position: relative;
-  box-shadow: var(--shadow-retro);
-  overflow: hidden;
+}
+
+.form-content {
+  display: block; 
+  overflow-y: auto; 
+  max-height: 100%;
 }
 
 /* Decoración del panel del formulario */
@@ -83,6 +100,33 @@ body {
   background: radial-gradient(circle, var(--color-coral-light) 0%, transparent 70%);
   opacity: 0.6;
   z-index: 1;
+}
+
+/* Panel de información */
+.info-panel {
+  background-image: url('../imgs/Black and Orange Simple Travel Agency Logo (1) 1.png');
+  color: var(--color-white);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay;
+  padding: 30px; /* padding uniforme */
+  box-sizing: border-box;
+}
+
+.info-content {
+  max-width: 100%;
+  width: 100%;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 /* Título principal retro */
@@ -350,29 +394,9 @@ input[type="text"]:focus {
   font-size: 1.2rem;
 }
 
-/* Panel de información/resultados */
-.info-panel {
-  background-color: rgba(0, 0, 0, 0.7);
-  border-radius: 15px;
-  padding: 30px;
-  color: var(--color-white);
-  box-shadow: var(--shadow-retro);
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  /* Reemplazando la imagen por un gradiente para eliminar dependencias */
-  background-image: linear-gradient(to bottom right, #1a2d40, #000000);
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: overlay;
-}
-
 /* Contenido descriptivo */
 .description-content {
   position: relative;
-  z-index: 2;
 }
 
 .description-content h2 {
@@ -392,31 +416,13 @@ input[type="text"]:focus {
 /* Decoraciones */
 .beach-decoration {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  bottom: 50px;
+  right: 50px;
   width: 80px;
   height: 80px;
-  content: '🌴';
-  font-size: 50px;
+  z-index: 1;
 }
 
-.dot-decoration {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  background-image: radial-gradient(
-    var(--color-coral) 20%,
-    transparent 20%,
-    transparent 40%,
-    var(--color-coral) 40%,
-    var(--color-coral) 60%,
-    transparent 60%
-  );
-  background-size: 10px 10px;
-  opacity: 0.5;
-}
 
 /* Contenido de resultados */
 .result-content {
@@ -543,8 +549,9 @@ input[readonly] {
     gap: 30px;
   }
   
+  .form-panel,
   .info-panel {
-    min-height: 400px;
+    min-height: auto;
   }
   
   .retro-title {
@@ -600,5 +607,10 @@ input[readonly] {
   
   .price-value {
     font-size: 2rem;
+  }
+  
+  .beach-decoration,
+  .dot-decoration {
+    display: none; 
   }
 }
