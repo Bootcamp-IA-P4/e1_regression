@@ -263,7 +263,6 @@ def predict_page():
                 return render_template('predict.html', form_data=form_data, error_message='No se pudo guardar.'), 500
             else:
                 log.info(f'Guardado DB OK (Prop ID: {saved_property.id}, Pred ID: {saved_prediction.id}).')
-                flash(f'Predicción realizada y guardada (Prop ID: {saved_property.id}, Pred ID: {saved_prediction.id}).', 'success')
                 return render_template('predict.html',
                                        prediction_result=predicted_value_dollars,
                                        input_data=property_data_for_db,

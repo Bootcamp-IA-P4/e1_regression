@@ -1,434 +1,538 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Verificar si estamos en la página del formulario
+    // ==================== CONFIGURACIÓN ====================
+    const features = [
+        {
+            name: 'CalidadGeneral',
+            label: 'Calidad General',
+            value: null,
+            format: (value) => ({
+                '1': 'Muy Pobre', '2': 'Pobre', '3': 'Pobre', '4': 'Regular',
+                '5': 'Regular', '6': 'Buena', '7': 'Buena', '8': 'Muy Buena',
+                '9': 'Muy Buena', '10': 'Excelente'
+            }[value] || value)
+        },
+        {
+            name: 'MetrosHabitables',
+            label: 'Metros Habitables',
+            value: null,
+            format: (value) => `${value} m²`
+        },
+        {
+            name: 'CochesGaraje',
+            label: 'Capacidad de Garaje',
+            value: null,
+            format: (value) => `${value} coche(s)`
+        },
+        {
+            name: 'AñoConstrucción',
+            label: 'Año de Construcción',
+            value: null
+        },
+        {
+            name: 'BañosCompletos',
+            label: 'Baños Completos',
+            value: null
+        },
+        {
+            name: 'TotalHabitacionesSobreSuelo',
+            label: 'Habitaciones',
+            value: null
+        },
+        {
+            name: 'Vecindario',
+            label: 'Vecindario',
+            value: null,
+            format: (value) => ({
+                'CollgCr': 'College Creek',
+                'Veenker': 'Veenker',
+                'Crawfor': 'Crawford',
+                'NoRidge': 'Northridge',
+                'Mitchel': 'Mitchell',
+                'StoneBr': 'Stone Brook',
+                'NWAmes': 'Northwest Ames',
+                'OldTown': 'Old Town'
+            }[value] || value)
+        }
+    ];
+
     const formWizard = document.getElementById('housing-wizard-form');
     if (!formWizard) return;
-    
-    // Configuración
-    const totalSteps = 25; // Total de pasos en el formulario
+
+    // ==================== ESTADO ====================
+    const totalSteps = 25;
     let currentStep = 1;
+    let formSubmitted = sessionStorage.getItem('formSubmitted') === 'true';
+
+    // ==================== ELEMENTOS UI ====================
+    const elements = {
+        prevBtn: document.getElementById('prev-btn'),
+        nextBtn: document.getElementById('next-btn'),
+        submitBtn: document.getElementById('submit-btn'),
+        progressBar: document.getElementById('progress-bar'),
+        stepCounter: document.getElementById('step-counter'),
+        resetBtn: document.getElementById('reset-form'),
+        descriptionContent: document.getElementById('description-content'),
+        resultContent: document.getElementById('result-content'),
+        priceDisplay: document.getElementById('price-display'),
+        keyFeatures: document.getElementById('key-features'),
+        loadingIndicator: document.createElement('div')
+    };
+
+    // Configuración inicial de UI
+    elements.loadingIndicator.className = 'loader';
+    elements.loadingIndicator.textContent = 'Calculando...';
+    elements.prevBtn.style.display = 'none';
+    elements.submitBtn.style.display = 'none';
+    elements.descriptionContent.style.display = formSubmitted ? 'none' : 'block';
+    elements.resultContent.style.display = formSubmitted ? 'block' : 'none';
+
+    // ==================== FUNCIONES CORE ====================
+    function updateFeatureValues() {
+        features.forEach(feature => {
+            const input = document.querySelector(`[name="${feature.name}"]`);
+            if (input) {
+                feature.value = input.type === 'radio' 
+                    ? document.querySelector(`input[name="${feature.name}"]:checked`)?.value 
+                    : input.value;
+            }
+        });
+        
+        sessionStorage.setItem('featuresData', JSON.stringify(
+            features.filter(f => f.value !== null && f.value !== '')
+        ));
+        
+        updateTemporaryFeaturesDisplay();
+    }
+
+    function updateTemporaryFeaturesDisplay() {
+        if (!elements.priceDisplay || formSubmitted) return;
+        
+        const featuresWithValues = features.filter(f => f.value !== null && f.value !== '');
+        
+        elements.priceDisplay.innerHTML = featuresWithValues.length > 0
+            ? `<div class="temp-features">${
+                featuresWithValues.map(f => 
+                    `<div><strong>${f.label}:</strong> ${
+                        f.format ? f.format(f.value) : f.value
+                    }</div>`
+                ).join('')
+              }</div>`
+            : 'Complete el formulario para ver la estimación';
+    }
+
+    function updateKeyFeatures() {
+        if (!elements.keyFeatures) return;
     
-    // Elementos DOM
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const submitBtn = document.getElementById('submit-btn');
-    const progressBar = document.getElementById('progress-bar');
-    const stepCounter = document.getElementById('step-counter');
-    const resetBtn = document.getElementById('reset-form');
+        const savedData = sessionStorage.getItem('featuresData');
+        const featuresToShow = savedData ? JSON.parse(savedData) : 
+            features.filter(f => f.value !== null && f.value !== '');
     
-    // Inicializar estado de los botones
-    prevBtn.style.display = 'none';
-    submitBtn.style.display = 'none';
-    
-    /**
-     * Actualiza la visualización para mostrar el paso actual
-     */
+        elements.keyFeatures.innerHTML = featuresToShow.length === 0
+            ? '<li>No hay datos suficientes</li>'
+            : featuresToShow.map(f => {
+                // Buscar la definición de la feature para obtener el formateador
+                const featureDef = features.find(def => def.name === f.name);
+                const formattedValue = featureDef?.format ? featureDef.format(f.value) : f.value;
+                
+                return `<li><strong>${featureDef?.label || f.label}:</strong> ${formattedValue}</li>`;
+            }).join('');
+    }
+
+    function navigate(direction) {
+        const newStep = currentStep + direction;
+        if (newStep < 1 || newStep > totalSteps) return;
+        
+        if (direction > 0 && !validateCurrentStep()) return;
+        
+        currentStep = newStep;
+        updateStep();
+        window.scrollTo({top: formWizard.offsetTop - 20, behavior: 'smooth'});
+    }
+
     function updateStep() {
-        // Ocultar todos los pasos con efecto fade-out
+        if (formSubmitted) return;
+        
         document.querySelectorAll('.step-container').forEach(step => {
             step.classList.remove('active');
         });
         
-        // Mostrar el paso actual con efecto fade-in
-        const currentStepElement = document.getElementById(`step-${currentStep}`);
-        if (currentStepElement) {
-            currentStepElement.classList.add('active');
-        }
+        const currentStepEl = document.getElementById(`step-${currentStep}`);
+        if (currentStepEl) currentStepEl.classList.add('active');
         
-        // Actualizar el contador de pasos
-        stepCounter.textContent = `Paso ${currentStep} de ${totalSteps}`;
+        // Actualizar UI
+        elements.stepCounter.textContent = `Paso ${currentStep} de ${totalSteps}`;
+        elements.progressBar.style.width = `${(currentStep / totalSteps) * 100}%`;
         
-        // Actualizar la barra de progreso con animación suave
-        const progressPercentage = (currentStep / totalSteps) * 100;
-        progressBar.style.width = `${progressPercentage}%`;
+        elements.prevBtn.style.display = currentStep === 1 ? 'none' : 'block';
+        elements.nextBtn.style.display = currentStep === totalSteps ? 'none' : 'block';
+        elements.submitBtn.style.display = currentStep === totalSteps ? 'block' : 'none';
         
-        // Mostrar/ocultar botones según el paso actual
-        if (currentStep === 1) {
-            prevBtn.style.display = 'none';
-        } else {
-            prevBtn.style.display = 'block';
-        }
-        
-        if (currentStep === totalSteps) {
-            nextBtn.style.display = 'none';
-            submitBtn.style.display = 'block';
-        } else {
-            nextBtn.style.display = 'block';
-            submitBtn.style.display = 'none';
-        }
-        
-        // Aplicar dependencias entre campos
         applyFieldDependencies();
+        clearErrorMessages();
+        updateFeatureValues();
     }
-    
-    /**
-     * Aplica dependencias entre campos
-     * Por ejemplo, si no hay garaje (0 coches), deshabilita campos relacionados
-     */
-    function applyFieldDependencies() {
-        // Dependencia: CochesGaraje y ÁreaGaraje
-        if (currentStep === 4) { 
-            const cochesGaraje = getSelectedValueById('CochesGaraje');
-            const areaGarajeInput = document.getElementById('ÁreaGaraje');
-            
-            if (cochesGaraje === '0') {
-                areaGarajeInput.value = '0';
-                areaGarajeInput.setAttribute('readonly', 'readonly');
-            } else {
-                areaGarajeInput.removeAttribute('readonly');
+
+    // ==================== ENVÍO Y RESULTADOS ====================
+    async function submitToBackend() {
+        try {
+            // Mostrar estado de carga
+            if (elements.priceDisplay) {
+                elements.priceDisplay.innerHTML = '';
+                elements.priceDisplay.appendChild(elements.loadingIndicator);
             }
+
+            // Enviar el formulario de manera tradicional
+            formWizard.submit();
+            
+            // Actualizar estado
+            formSubmitted = true;
+            sessionStorage.setItem('formSubmitted', 'true');
+            
+            // Actualizar UI
+            if (elements.descriptionContent) {
+                elements.descriptionContent.style.display = 'none';
+            }
+            if (elements.resultContent) {
+                elements.resultContent.style.display = 'block';
+            }
+            
+            // Actualizar características
+            updateFeatureValues();
+            updateKeyFeatures();
+
+        } catch (error) {
+            console.error('Error al enviar el formulario:', error);
+            if (elements.priceDisplay) {
+                elements.priceDisplay.innerHTML = 
+                    '<div class="error">Error al calcular. Intente nuevamente.</div>';
+                setTimeout(() => updateTemporaryFeaturesDisplay(), 3000);
+            }
+        }
+    }
+
+    function showPredictionResult(price) {
+        formSubmitted = true;
+        sessionStorage.setItem('formSubmitted', 'true');
+        
+        if (elements.priceDisplay) {
+            elements.priceDisplay.innerHTML = `
+                <div class="prediction-result">
+                    <h3>Valor estimado:</h3>
+                    <div class="price">$${Number(price).toLocaleString()}</div>
+                </div>
+            `;
         }
         
-        // Dependencia: Chimeneas y CalidadChimenea
-        if (currentStep === 20) {
-            const chimeneas = getSelectedValueById('Chimeneas');
-            const calidadChimeneaInputs = document.querySelectorAll('input[name="CalidadChimenea"]');
-            
-            if (chimeneas === '0') {
-                // Seleccionar automáticamente "NoTiene"
-                calidadChimeneaInputs.forEach(input => {
-                    if (input.value === 'NoTiene') {
-                        input.checked = true;
-                    }
-                    
-                    // Deshabilitar todas excepto "NoTiene"
-                    if (input.value !== 'NoTiene') {
-                        input.disabled = true;
-                        input.parentElement.style.opacity = '0.5';
-                    }
-                });
-            } else {
-                // Habilitar todas las opciones
-                calidadChimeneaInputs.forEach(input => {
-                    input.disabled = false;
-                    input.parentElement.style.opacity = '1';
-                });
-            }
+        if (elements.descriptionContent) {
+            elements.descriptionContent.style.display = 'none';
         }
-        
-        // Dependencia: Metros Sótano y Calidad Sótano
-        if (currentStep === 17) {
-            const metrosSotano = document.getElementById('MetrosTotalesSótano').value;
-            const calidadSotanoInputs = document.querySelectorAll('input[name="CalidadSótano"]');
-            
-            if (metrosSotano === '0') {
-                // Seleccionar automáticamente "NoSótano"
-                calidadSotanoInputs.forEach(input => {
-                    if (input.value === 'NoSótano') {
-                        input.checked = true;
-                    }
-                    
-                    // Deshabilitar todas excepto "NoSótano"
-                    if (input.value !== 'NoSótano') {
-                        input.disabled = true;
-                        input.parentElement.style.opacity = '0.5';
-                    }
-                });
-            } else {
-                // Habilitar todas las opciones
-                calidadSotanoInputs.forEach(input => {
-                    input.disabled = false;
-                    input.parentElement.style.opacity = '1';
-                });
-            }
+        if (elements.resultContent) {
+            elements.resultContent.style.display = 'block';
         }
+        updateKeyFeatures();
     }
-    
-    /**
-     * Obtiene el valor seleccionado de inputs radio por su name
-     */
-    function getSelectedValueById(name) {
-        const selectedInput = document.querySelector(`input[name="${name}"]:checked`);
-        return selectedInput ? selectedInput.value : '';
-    }
-    
-    /**
-     * Valida que todos los campos requeridos en el paso actual estén completos
-     */
-    function validateCurrentStep() {
-        const currentStepElement = document.getElementById(`step-${currentStep}`);
-        const inputs = currentStepElement.querySelectorAll('input[required], select[required]');
+
+    // ==================== VALIDACIÓN ====================
+    function validateCurrentStep(isSubmission = false) {
+        const currentStepEl = document.getElementById(`step-${currentStep}`);
+        const inputs = currentStepEl.querySelectorAll('input[required], select[required]');
         let isValid = true;
+    
+        clearErrorMessages();
+    
         inputs.forEach(input => {
-            // Eliminar mensajes de error previos
-            const errorElement = input.parentElement.querySelector('.error-message');
-            if (errorElement) errorElement.remove();
-            input.classList.remove('error');
-            // Validar campos requeridos
-            if ((input.type === 'radio' && !getSelectedValueById(input.name)) || 
-                (input.type !== 'radio' && !input.value.trim())) {
+            const isEmpty = (input.type === 'radio' && !document.querySelector(`input[name="${input.name}"]:checked`)) || 
+                            (input.type !== 'radio' && !input.value.trim());
+            
+            if (isEmpty) {
                 isValid = false;
-                // Para radios, marcar error solo una vez por grupo
-                if (input.type !== 'radio' || !input.parentElement.parentElement.querySelector('.error-message')) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message';
+                errorMsg.textContent = 'Este campo es obligatorio';
+                
+                if (input.type !== 'radio') {
+                    input.classList.add('error');
+                    input.parentElement.appendChild(errorMsg);
+                } else if (!input.closest('.option-buttons').querySelector('.error-message')) {
+                    input.closest('.option-buttons').appendChild(errorMsg);
+                }
+            }
+    
+            // Validación específica para años
+            if (input.type === 'number' && input.value && ['AñoConstrucción', 'AñoRenovación'].includes(input.id)) {
+                const year = parseInt(input.value);
+                if (year < 1800 || year > 2025) {
+                    isValid = false;
+                    input.classList.add('error');
                     const errorMsg = document.createElement('div');
                     errorMsg.className = 'error-message';
-                    errorMsg.textContent = 'Requerido';
-                    if (input.type !== 'radio') {
-                        input.classList.add('error');
-                        input.parentElement.appendChild(errorMsg);
-                    } else {
-                        input.parentElement.parentElement.appendChild(errorMsg);
-                    }
+                    errorMsg.textContent = 'El año debe estar entre 1800 y 2025';
+                    input.parentElement.appendChild(errorMsg);
+                }
+            }
+    
+            // Validación específica para números negativos
+            if (input.type === 'number' && input.value && [
+                'MetrosHabitables', 'ÁreaGaraje', 'MetrosTotalesSótano',
+                'Metros1raPlanta', 'ÁreaRevestimientoMampostería',
+                'MetrosAcabadosSótano1', 'FrenteLote'
+            ].includes(input.id)) {
+                const value = parseFloat(input.value);
+                if (value < 0) {
+                    isValid = false;
+                    input.classList.add('error');
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'error-message';
+                    errorMsg.textContent = 'El valor no puede ser negativo';
+                    input.parentElement.appendChild(errorMsg);
                 }
             }
         });
+    
         return isValid;
     }
     
-    /**
-     * Maneja el envío del formulario para la predicción del modelo ML
-     */
-    function handleSubmitForm(e) {
-        e.preventDefault();
-        
-        // Mostrar los valores ingresados en consola
-        const formData = new FormData(formWizard);
-        const values = {};
-        formData.forEach((value, key) => { values[key] = value; });
-        console.log('Valores ingresados:', values);
-        
-        // Validar TODOS los pasos, no solo el actual
-        let allValid = true;
-        let firstInvalidStep = null;
-        for (let step = 1; step <= totalSteps; step++) {
-            const stepElement = document.getElementById(`step-${step}`);
-            if (!stepElement) continue;
-            const inputs = stepElement.querySelectorAll('input[required], select[required]');
+    function validateSingleField(field) {
+        const container = field.closest('.form-group') || 
+                         field.closest('.radio-group') || 
+                         field.closest('.option-buttons');
+        if (!container) return true;
+    
+        // Limpiar errores previos
+        container.querySelectorAll('.error-message').forEach(el => el.remove());
+        container.classList.remove('error');
+        field.classList.remove('error');
+    
+        // Validar campo requerido
+        if (field.hasAttribute('required')) {
+            let isEmpty = false;
             
-            inputs.forEach(input => {
-                // Eliminar mensajes de error previos
-                const errorElement = input.parentElement.querySelector('.error-message');
-                if (errorElement) errorElement.remove();
-                if (input.classList) input.classList.remove('error');
-                
-                if ((input.type === 'radio' && !getSelectedValueById(input.name)) || 
-                    (input.type !== 'radio' && !input.value.trim())) {
-                    allValid = false;
-                    if (!firstInvalidStep) firstInvalidStep = step;
-                    input.classList.add('error');
-                    if (!input.parentElement.querySelector('.error-message')) {
-                        const errorMsg = document.createElement('div');
-                        errorMsg.className = 'error-message';
-                        errorMsg.textContent = 'Requerido';
-                        input.parentElement.appendChild(errorMsg);
-                    }
+            if (field.type === 'radio') {
+                const groupName = field.name;
+                isEmpty = !document.querySelector(`input[name="${groupName}"]:checked`);
+            } else {
+                isEmpty = !field.value.trim();
+            }
+    
+            if (isEmpty) {
+                container.classList.add('error');
+                field.classList.add('error');
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message';
+                errorMsg.textContent = 'Este campo es obligatorio';
+                container.appendChild(errorMsg);
+                return false;
+            }
+        }
+    
+        // Validación específica para años
+        if (field.type === 'number' && field.value && ['AñoConstrucción', 'AñoRenovación'].includes(field.id)) {
+            const year = parseInt(field.value);
+            if (year < 1800 || year > new Date().getFullYear()) {
+                field.classList.add('error');
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message';
+                errorMsg.textContent = `El año debe estar entre 1800 y ${new Date().getFullYear()}`;
+                container.appendChild(errorMsg);
+                return false;
+            }
+        }
+    
+        // Validación para números negativos
+        if (field.type === 'number' && field.value && [
+            'MetrosHabitables', 'ÁreaGaraje', 'MetrosTotalesSótano',
+            'Metros1raPlanta', 'ÁreaRevestimientoMampostería',
+            'MetrosAcabadosSótano1', 'FrenteLote'
+        ].includes(field.id)) {
+            const value = parseFloat(field.value);
+            if (value < 0) {
+                field.classList.add('error');
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message';
+                errorMsg.textContent = 'El valor no puede ser negativo';
+                container.appendChild(errorMsg);
+                return false;
+            }
+        }
+    
+        return true;
+    }
+
+    function clearErrorMessages() {
+        document.querySelectorAll('.error-message').forEach(el => el.remove());
+        document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+        document.querySelectorAll('.error-label').forEach(el => el.remove()); 
+    }
+
+    // ==================== DEPENDENCIAS ENTRE CAMPOS ====================
+    function applyFieldDependencies() {
+        // Dependencia: CochesGaraje -> ÁreaGaraje
+        if (currentStep === 4) {
+            const cochesGaraje = document.querySelector('input[name="CochesGaraje"]:checked')?.value;
+            const areaGaraje = document.getElementById('ÁreaGaraje');
+            if (areaGaraje) {
+                if (cochesGaraje === '0') {
+                    areaGaraje.value = '0';
+                    areaGaraje.readOnly = true;
+                } else {
+                    areaGaraje.readOnly = false;
+                }
+            }
+        }
+
+        // Dependencia: Chimeneas -> CalidadChimenea
+        if (currentStep === 20) {
+            const chimeneas = document.querySelector('input[name="Chimeneas"]:checked')?.value;
+            document.querySelectorAll('input[name="CalidadChimenea"]').forEach(input => {
+                const container = input.closest('.radio-option');
+                if (chimeneas === '0') {
+                    if (input.value === 'NoTiene') input.checked = true;
+                    input.disabled = input.value !== 'NoTiene';
+                    container.style.opacity = input.disabled ? '0.5' : '1';
+                } else {
+                    input.disabled = false;
+                    container.style.opacity = '1';
                 }
             });
         }
-        
-        if (!allValid) {
-            alert('Por favor complete todos los campos requeridos antes de enviar.');
-            if (firstInvalidStep) {
-                currentStep = firstInvalidStep;
-                updateStep();
+    }
+
+    // ==================== MANEJO DE INPUTS ====================
+    function setupInputTouchedState() {
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('blur', function() {
+                this.dataset.touched = 'true';
+                validateSingleField(this);
+            });
+
+            if (input.type === 'radio' || input.tagName === 'SELECT') {
+                input.addEventListener('change', function() {
+                    if (input.type === 'radio') {
+                        document.querySelectorAll(`input[name="${this.name}"]`).forEach(radio => {
+                            radio.dataset.touched = 'true';
+                        });
+                    } else {
+                        this.dataset.touched = 'true';
+                    }
+                    validateSingleField(this);
+                });
             }
-            return;
-        }
-        
-        // Mostrar carga
-        const loadingIndicator = document.createElement('div');
-        loadingIndicator.className = 'loading-indicator';
-        loadingIndicator.innerHTML = '<p>Calculando predicción...</p>';
-        document.querySelector('.form-panel').appendChild(loadingIndicator);
-        
-        // Enviar usando el método tradicional del formulario
-        formWizard.submit();
-    }
-    
-    /**
-     * Función auxiliar para formatear valores monetarios
-     */
-    function formatCurrency(value) {
-        return '$' + value.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-    }
-    
-    /**
-     * Función para mostrar información adicional basada en el valor predicho
-     */
-    function displayAdditionalInfo(predictedValue) {
-        const infoElement = document.getElementById('additional-info');
-        let message = '';
-        
-        if (predictedValue > 500000) {
-            message = '¡Propiedad de lujo! Esta vivienda está en el top 10% del mercado.';
-        } else if (predictedValue > 300000) {
-            message = 'Propiedad de gama alta. Excelente inversión para familias.';
-        } else if (predictedValue > 150000) {
-            message = 'Vivienda estándar. Buen equilibrio entre precio y comodidad.';
-        } else {
-            message = 'Oportunidad de inversión. Propiedad con buen potencial de revalorización.';
-        }
-        
-        infoElement.textContent = message;
-    }
-    
-    /**
-     * Muestra las características utilizadas en la predicción
-     */
-    function displayFeatures(inputData) {
-        const keyFeatures = document.getElementById('key-features');
-        keyFeatures.innerHTML = ''; // Limpiar lista
-        
-        // Mapeo de nombres de características a etiquetas más legibles
-        const featureLabels = {
-            'CalidadGeneral': 'Calidad General',
-            'MetrosHabitables': 'Área Habitable',
-            'TotalHabitacionesSobreSuelo': 'Habitaciones',
-            'BañosCompletos': 'Baños',
-            'AñoConstrucción': 'Año de Construcción',
-            'Vecindario': 'Vecindario',
-            'CochesGaraje': 'Espacios de Garaje',
-            'Chimeneas': 'Número de Chimeneas',
-            'MetrosTotalesSótano': 'Área de Sótano'
-        };
-        
-        // Unidades para ciertas características
-        const featureUnits = {
-            'MetrosHabitables': ' m²',
-            'ÁreaGaraje': ' m²',
-            'MetrosTotalesSótano': ' m²',
-            'Metros1raPlanta': ' m²',
-            'ÁreaRevestimientoMampostería': ' m²',
-            'MetrosAcabadosSótano1': ' m²',
-            'FrenteLote': ' m'
-        };
-        
-        // Mostrar las características más importantes
-        const importantFeatures = [
-            'CalidadGeneral', 
-            'MetrosHabitables', 
-            'TotalHabitacionesSobreSuelo', 
-            'BañosCompletos', 
-            'AñoConstrucción', 
-            'Vecindario',
-            'CochesGaraje',
-            'Chimeneas',
-            'MetrosTotalesSótano'
-        ];
-        
-        importantFeatures.forEach(feature => {
-            if (inputData.hasOwnProperty(feature)) {
-                const li = document.createElement('li');
-                const displayValue = typeof inputData[feature] === 'number' && featureUnits[feature] 
-                    ? inputData[feature] + featureUnits[feature] 
-                    : inputData[feature];
-                
-                li.innerHTML = `<strong>${featureLabels[feature] || feature}:</strong> ${displayValue}`;
-                keyFeatures.appendChild(li);
+
+            if (['text', 'number', 'email'].includes(input.type)) {
+                let typingTimer;
+                input.addEventListener('input', function() {
+                    clearTimeout(typingTimer);
+                    typingTimer = setTimeout(() => {
+                        if (this.dataset.touched) validateSingleField(this);
+                    }, 500);
+                });
             }
         });
     }
+
+    // ==================== RESET ====================
+   // ==================== RESET ====================
+   function resetFormCompletely() {
+    // Resetear estado del formulario
+    formWizard.reset();
+    currentStep = 1;
+    formSubmitted = false;
     
-    /**
-     * Animación de transición entre pasos
-     */
-    function animateStepTransition(direction = 'next') {
-        const currentStepElement = document.getElementById(`step-${currentStep}`);
-        
-        // Animar salida
-        currentStepElement.style.transition = 'opacity 0.3s, transform 0.3s';
-        currentStepElement.style.opacity = '0';
-        currentStepElement.style.transform = direction === 'next' ? 'translateX(-20px)' : 'translateX(20px)';
-        
-        // Animar entrada después de un pequeño delay
-        setTimeout(() => {
-            currentStepElement.style.opacity = '1';
-            currentStepElement.style.transform = 'translateX(0)';
-        }, 50);
-    }
+    // Resetear estado de las features
+    features.forEach(f => f.value = null);
     
-    // Event Listener para botón Anterior
-    prevBtn.addEventListener('click', function() {
-        if (currentStep > 1) {
-            currentStep--;
-            updateStep();
-            animateStepTransition('prev');
-            window.scrollTo({top: formWizard.offsetTop - 20, behavior: 'smooth'});
-        }
+    // Limpiar almacenamiento
+    sessionStorage.removeItem('formSubmitted');
+    sessionStorage.removeItem('featuresData');
+    
+    // Resetear UI principal
+    elements.descriptionContent.style.display = 'block';
+    elements.resultContent.style.display = 'none';
+    elements.priceDisplay.textContent = 'Complete el formulario para ver la estimación';
+    
+    // Limpiar TODOS los errores y estados
+    document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+    document.querySelectorAll('.error-message').forEach(el => el.remove());
+    document.querySelectorAll('[data-touched]').forEach(el => delete el.dataset.touched);
+    
+    // Resetear controles específicos
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.checked = false;
+        radio.disabled = false;
+        const container = radio.closest('.radio-group, .option-buttons');
+        if (container) container.style.opacity = '1';
     });
     
-    // Event Listener para botón Siguiente
-    nextBtn.addEventListener('click', function() {
-        if (validateCurrentStep()) {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateStep();
-                animateStepTransition('next');
-                window.scrollTo({top: formWizard.offsetTop - 20, behavior: 'smooth'});
+    document.querySelectorAll('select').forEach(select => {
+        select.selectedIndex = 0;
+    });
+    
+    document.querySelectorAll('input[readonly]').forEach(input => {
+        input.readOnly = false;
+    });
+    
+    // Restablecer dependencias y UI
+    applyFieldDependencies();
+    updateStep();
+    
+    // Scroll al inicio
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+    // ==================== INICIALIZACIÓN ====================
+    setupInputTouchedState();
+    updateStep();
+
+    // Cargar última predicción si existe
+    if (formSubmitted) {
+        updateKeyFeatures();
+        const lastPrediction = sessionStorage.getItem('featuresData');
+        if (lastPrediction) {
+            const featuresData = JSON.parse(lastPrediction);
+            const precio = featuresData.find(f => f.name === 'precioPredicho')?.value;
+            if (precio) {
+                elements.priceDisplay.innerHTML = `
+                    <div class="prediction-result">
+                        <h3>Valor estimado:</h3>
+                        <div class="price">$${Number(precio).toLocaleString()}</div>
+                    </div>
+                `;
             }
+        }
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    elements.prevBtn.addEventListener('click', () => navigate(-1));
+    elements.nextBtn.addEventListener('click', () => navigate(1));
+    elements.submitBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (validateCurrentStep(true)) {
+            await submitToBackend();
         }
     });
 
-    // Habilitar avanzar con radio/select al cambiar
-    document.querySelectorAll('input[required], select[required]').forEach(input => {
-        input.addEventListener('change', function() {
-            // Si el input pertenece al paso actual, revalida y actualiza el botón Siguiente
-            const stepElement = document.getElementById(`step-${currentStep}`);
-            if (stepElement && stepElement.contains(input)) {
-                // Si el campo requerido ya está completo, intenta avanzar automáticamente
-                if (validateCurrentStep()) {
-                    nextBtn.disabled = false;
-                } else {
-                    nextBtn.disabled = true;
-                }
-            }
-        });
-    });
-    
-    // Event Listener para botón Enviar
-    submitBtn.addEventListener('click', handleSubmitForm);
-    
-    // Event Listener para prevenir envío con Enter
-    formWizard.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
+    formWizard.addEventListener('submit', (e) => {
+        if (!validateCurrentStep(true)) {
             e.preventDefault();
-            if (currentStep < totalSteps) {
-                nextBtn.click();
-            } else {
-                submitBtn.click();
-            }
         }
     });
-    
-    // Event Listener para el formulario
-    formWizard.addEventListener('submit', handleSubmitForm);
-    
-    // Event Listener para botón de reinicio
-    if (resetBtn) {
-        resetBtn.addEventListener('click', function() {
-            // Reiniciar el formulario
-            formWizard.reset();
-            formWizard.style.display = 'block';
-            
-            // Ocultar resultado y mostrar descripción
-            document.getElementById('description-content').style.display = 'block';
-            document.getElementById('result-content').style.display = 'none';
-            
-            // Volver al paso 1
-            currentStep = 1;
-            updateStep();
-        });
-    }
-    
-    // Configurar dependencias entre campos
-    document.querySelectorAll('input[name="CochesGaraje"]').forEach(input => {
-        input.addEventListener('change', function() {
-            if (currentStep === 4) {
-                applyFieldDependencies();
-            }
-        });
+
+    formWizard.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (formSubmitted) return;
+            currentStep < totalSteps ? elements.nextBtn.click() : elements.submitBtn.click();
+        }
     });
-    
-    document.querySelectorAll('input[name="Chimeneas"]').forEach(input => {
-        input.addEventListener('change', function() {
-            if (currentStep === 20) {
-                applyFieldDependencies();
-            }
-        });
+
+    // Manejador del botón de reset usando delegación de eventos
+    document.addEventListener('click', (e) => {
+        if (e.target && e.target.id === 'reset-form') {
+            e.preventDefault();
+            resetFormCompletely();
+        }
     });
-    
-    // Inicializar el formulario
-    updateStep();
+
+    // Cursor retro
+    document.body.style.cursor = 'url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'><path fill=\'%23ff7f50\' d=\'M7,2H17L12,22L7,2Z\'/></svg>"), auto';
 });
