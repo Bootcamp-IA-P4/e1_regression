@@ -21,7 +21,7 @@
             </div>
             
             <!-- Formulario -->
-            <form id="housing-wizard-form" method="POST" action="{{ url_for('main.predict_page') }}">
+            <form id="housing-wizard-form" method="POST" action="{{ url_for('main.predict_page') }}" enctype="multipart/form-data">
                 
                 <!-- Paso 1: Calidad General -->
                 <div class="step-container active" id="step-1">
@@ -735,5 +735,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/california-predict.js') }}"></script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
 {% endblock %}

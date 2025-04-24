@@ -147,47 +147,30 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateCurrentStep() {
         const currentStepElement = document.getElementById(`step-${currentStep}`);
         const inputs = currentStepElement.querySelectorAll('input[required], select[required]');
-        
         let isValid = true;
-        
         inputs.forEach(input => {
             // Eliminar mensajes de error previos
             const errorElement = input.parentElement.querySelector('.error-message');
-            if (errorElement) {
-                errorElement.remove();
-            }
-            
-            // Eliminar clase de error
-            if (input.classList) {
-                input.classList.remove('error');
-            }
-            
+            if (errorElement) errorElement.remove();
+            input.classList.remove('error');
             // Validar campos requeridos
             if ((input.type === 'radio' && !getSelectedValueById(input.name)) || 
-                (input.type !== 'radio' && !input.value)) {
-                
+                (input.type !== 'radio' && !input.value.trim())) {
                 isValid = false;
-                
                 // Para radios, marcar error solo una vez por grupo
                 if (input.type !== 'radio' || !input.parentElement.parentElement.querySelector('.error-message')) {
-                    // Añadir mensaje de error
                     const errorMsg = document.createElement('div');
                     errorMsg.className = 'error-message';
-                    errorMsg.textContent = 'Este campo es obligatorio';
-                    
-                    // Para inputs normales, añadir después del input
+                    errorMsg.textContent = 'Requerido';
                     if (input.type !== 'radio') {
                         input.classList.add('error');
                         input.parentElement.appendChild(errorMsg);
-                    } 
-                    // Para radios, añadir después del contenedor de opciones
-                    else {
+                    } else {
                         input.parentElement.parentElement.appendChild(errorMsg);
                     }
                 }
             }
         });
-        
         return isValid;
     }
     
@@ -195,84 +178,60 @@ document.addEventListener('DOMContentLoaded', function() {
      * Maneja el envío del formulario para la predicción del modelo ML
      */
     function handleSubmitForm(e) {
-        e.preventDefault(); // Prevenir el envío tradicional del formulario
+        e.preventDefault();
         
-        // Validar el paso actual antes de enviar
-        if (!validateCurrentStep()) {
+        // Mostrar los valores ingresados en consola
+        const formData = new FormData(formWizard);
+        const values = {};
+        formData.forEach((value, key) => { values[key] = value; });
+        console.log('Valores ingresados:', values);
+        
+        // Validar TODOS los pasos, no solo el actual
+        let allValid = true;
+        let firstInvalidStep = null;
+        for (let step = 1; step <= totalSteps; step++) {
+            const stepElement = document.getElementById(`step-${step}`);
+            if (!stepElement) continue;
+            const inputs = stepElement.querySelectorAll('input[required], select[required]');
+            
+            inputs.forEach(input => {
+                // Eliminar mensajes de error previos
+                const errorElement = input.parentElement.querySelector('.error-message');
+                if (errorElement) errorElement.remove();
+                if (input.classList) input.classList.remove('error');
+                
+                if ((input.type === 'radio' && !getSelectedValueById(input.name)) || 
+                    (input.type !== 'radio' && !input.value.trim())) {
+                    allValid = false;
+                    if (!firstInvalidStep) firstInvalidStep = step;
+                    input.classList.add('error');
+                    if (!input.parentElement.querySelector('.error-message')) {
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'error-message';
+                        errorMsg.textContent = 'Requerido';
+                        input.parentElement.appendChild(errorMsg);
+                    }
+                }
+            });
+        }
+        
+        if (!allValid) {
+            alert('Por favor complete todos los campos requeridos antes de enviar.');
+            if (firstInvalidStep) {
+                currentStep = firstInvalidStep;
+                updateStep();
+            }
             return;
         }
         
-        // Mostrar indicador de carga
+        // Mostrar carga
         const loadingIndicator = document.createElement('div');
         loadingIndicator.className = 'loading-indicator';
-        loadingIndicator.innerHTML = '<p>Calculando predicción...</p><div class="spinner"></div>';
+        loadingIndicator.innerHTML = '<p>Calculando predicción...</p>';
         document.querySelector('.form-panel').appendChild(loadingIndicator);
         
-        // Recolectar todos los datos del formulario
-        const formData = new FormData(formWizard);
-        const jsonData = {};
-        
-        // Convertir FormData a objeto JSON
-        formData.forEach((value, key) => {
-            // Para campos numéricos, convertir a número
-            if (!isNaN(value) && value.trim() !== '') {
-                jsonData[key] = parseFloat(value);
-            } else {
-                jsonData[key] = value;
-            }
-        });
-        
-        // URL del endpoint de tu API/modelo ML
-        const apiUrl = '/predict'; // Ajusta esta URL según tu backend
-        
-        // Enviar datos al modelo ML mediante AJAX
-        fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(jsonData)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Ocultar formulario
-            formWizard.style.display = 'none';
-            
-            // Mostrar el panel de resultados
-            document.getElementById('description-content').style.display = 'none';
-            const resultContent = document.getElementById('result-content');
-            resultContent.style.display = 'block';
-            
-            // Mostrar el valor predicho con formato de moneda
-            const predictedValueElement = document.getElementById('predicted-value');
-            predictedValueElement.textContent = formatCurrency(data.prediction);
-            
-            // Mostrar intervalo de confianza si está disponible
-            if (data.confidence_interval) {
-                const confidenceElement = document.getElementById('confidence-interval');
-                confidenceElement.textContent = `(${formatCurrency(data.confidence_interval[0])} - ${formatCurrency(data.confidence_interval[1])})`;
-                confidenceElement.style.display = 'block';
-            }
-            
-            // Mostrar características clave utilizadas en la predicción
-            displayFeatures(jsonData);
-            
-            // Mostrar mensaje adicional basado en el valor predicho
-            displayAdditionalInfo(data.prediction);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ha ocurrido un error al procesar la predicción. Por favor, inténtelo de nuevo.');
-        })
-        .finally(() => {
-            // Eliminar indicador de carga
-            loadingIndicator.remove();
-        });
+        // Enviar usando el método tradicional del formulario
+        formWizard.submit();
     }
     
     /**
@@ -400,6 +359,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.scrollTo({top: formWizard.offsetTop - 20, behavior: 'smooth'});
             }
         }
+    });
+
+    // Habilitar avanzar con radio/select al cambiar
+    document.querySelectorAll('input[required], select[required]').forEach(input => {
+        input.addEventListener('change', function() {
+            // Si el input pertenece al paso actual, revalida y actualiza el botón Siguiente
+            const stepElement = document.getElementById(`step-${currentStep}`);
+            if (stepElement && stepElement.contains(input)) {
+                // Si el campo requerido ya está completo, intenta avanzar automáticamente
+                if (validateCurrentStep()) {
+                    nextBtn.disabled = false;
+                } else {
+                    nextBtn.disabled = true;
+                }
+            }
+        });
     });
     
     // Event Listener para botón Enviar
