@@ -65,7 +65,7 @@ body {
   position: relative;
   box-shadow: var(--shadow-retro);
   overflow: hidden;
-  min-height: 800px; 
+  height: 90vh;
 }
 
 /* Contenido interno común */
@@ -546,7 +546,6 @@ input[readonly] {
 @media (max-width: 992px) {
   .content-grid {
     grid-template-columns: 1fr;
-    gap: 30px;
   }
   
   .form-panel,
