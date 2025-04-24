@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // URL del endpoint de tu API/modelo ML
-        const apiUrl = '/api/predict'; // Ajusta esta URL según tu backend
+        const apiUrl = '/predict'; // Ajusta esta URL según tu backend
         
         // Enviar datos al modelo ML mediante AJAX
         fetch(apiUrl, {

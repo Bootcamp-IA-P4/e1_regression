@@ -705,26 +705,28 @@
         </div>
         
         <!-- Contenido del resultado (oculto inicialmente) -->
-        <div id="result-content" class="result-content" style="display: none;">
-            <h2>¡Predicción Finalizada!</h2>
-            
+        <div id="result-content" class="result-content" style="display: {% if prediction_result is not none %}block{% else %}none{% endif %};">
+            <h2>Resultado de la Predicción</h2>
             <div class="price-display">
-                <span class="price-label">Valor estimado:</span>
-                <span class="price-value" id="predicted-value">$0.00</span>
+                <span class="price-label">Precio Estimado:</span>
+                <span class="price-value">
+                    {% if prediction_result %}
+                        ${{ "{:,.2f}".format(prediction_result) }}
+                    {% else %}
+                        (No disponible)
+                    {% endif %}
+                </span>
             </div>
-            
-            <div class="result-summary">
-                <h3>Características clave:</h3>
-                <ul id="key-features">
-                    <!-- Se llenará dinámicamente -->
-                </ul>
+            {% if success_message %}
+            <div class="alert alert-success">
+                {{ success_message }}
             </div>
-            
-            <button id="reset-form" class="retro-btn btn-secondary">
-                Realizar otra predicción <span class="btn-icon">🔄</span>
-            </button>
-            
-            <div class="result-decoration"></div>
+            {% endif %}
+            {% if error_message %}
+            <div class="alert alert-danger">
+                {{ error_message }}
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
