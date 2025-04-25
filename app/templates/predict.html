@@ -711,7 +711,8 @@
 </div>
 
 <!-- Contenido del resultado (oculto inicialmente) -->
-<div id="result-content" class="result-content" style="display: {% if prediction_result is not none %}block{% else %}none{% endif %};">
+<div id="result-content" class="result-content {% if prediction_result is not none %}fade-in{% endif %}" 
+     style="display: {% if prediction_result is not none %}block{% else %}none{% endif %};">
     <h2>Resultado de la Predicción</h2>
     <div class="price-display">
         <span class="price-label">Precio Estimado:</span>

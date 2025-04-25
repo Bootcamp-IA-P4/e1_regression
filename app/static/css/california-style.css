@@ -106,17 +106,17 @@ body {
 .info-panel {
   background-image: url('../imgs/Black and Orange Simple Travel Agency Logo (1) 1.png');
   color: var(--color-white);
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   background-size: cover;
   background-position: center;
+  position: relative;
+  overflow: hidden;
+  padding: 30px;
+  box-shadow: var(--shadow-retro);
+  background-color: rgba(0, 0, 0, 0.4);
   background-blend-mode: overlay;
-  padding: 30px; /* padding uniforme */
-  box-sizing: border-box;
-  position: relative; /* Asegúrate de que el contenedor tenga posición relativa */
-  overflow: hidden; 
 }
 
 
@@ -152,7 +152,7 @@ body {
   box-sizing: border-box;
 }
 
-/* TÃ­tulo principal retro */
+/* Tí­tulo principal retro */
 .retro-title {
   font-family: var(--font-retro);
   font-size: 3rem;
@@ -440,7 +440,11 @@ input[type="text"]:focus {
 /* Contenido de resultados */
 .result-content {
   position: relative;
-  z-index: 2;
+  z-index: 3;
+  padding: 25px:
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
 }
 
 .result-content h2 {
