@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 
+{% block main_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/california-style.css') }}?v=1">
+{% endblock %}
+
 {% block title %}Calculadora de Precios - California Dreamin'{% endblock %}
 
 {% block content %}
     <div class="content-grid">
+        <img src="{{ url_for('static', filename='imgs/zigzag.png') }}" alt="Zigzag" class="zigzag-decoration">
+        <img src="{{ url_for('static', filename='imgs/diamonds.png') }}" alt="Puntos" class="dot-decoration">
         <!-- Panel izquierdo (formulario) -->
         <div class="form-panel">
             <div class="form-content">
@@ -526,7 +532,7 @@
         </div>
         <div class="option-wrapper">
             <input type="radio" id="Cimentación-BrkTil" name="Cimentación" value="BrkTil" required>
-            <label for="Cimentación-BrkTil" class="option-button">Ladrillo/Azulejo</label>
+            <label for="Cimentación-BrkTil" class="option-button">Ladrillo y/o Azulejo</label>
         </div>
         <div class="option-wrapper">
             <input type="radio" id="Cimentación-Wood" name="Cimentación" value="Wood" required>
@@ -590,7 +596,7 @@
         </div>
         <div class="option-wrapper">
             <input type="radio" id="TipoRevestimientoMampostería-Ninguno" name="TipoRevestimientoMampostería" value="Ninguno" required>
-            <label for="TipoRevestimientoMampostería-Ninguno" class="option-button">Sin Revestimiento</label>
+            <label for="TipoRevestimientoMampostería-Ninguno" class="option-button">Sin acabado</label>
         </div>
         <div class="option-wrapper">
             <input type="radio" id="TipoRevestimientoMampostería-Stone" name="TipoRevestimientoMampostería" value="Stone" required>
@@ -746,5 +752,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script src="{{ url_for('static', filename='js/california-form.js') }}"></script>
 {% endblock %}

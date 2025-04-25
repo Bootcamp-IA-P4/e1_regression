@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block main_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}?v=1">
+{% endblock %}
+
 {% block title %}Inicio - Predicciones Recientes{% endblock %}
 
 {% block content %}
