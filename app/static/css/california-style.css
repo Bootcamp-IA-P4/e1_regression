@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playball&family=Quicksand:wght@300..700&display=swap');
 
 :root {
   --color-coral: #F98F6D;
@@ -7,14 +7,14 @@
   --color-teal: #4ecdc4;
   --color-teal-dark: #1a9e9e;
   --color-yellow: #f9cb40;
-  --color-navy: #1a2d40;
-  --color-dark: #222222;
+  --color-navy: #0171D3;
+  --color-dark: #2D2D2D;
   --color-white: #ffffff;
   --color-light-gray: #f2f2f2;
   --gradient-sunset: linear-gradient(135deg, #ff8008 0%, #ff5722 100%);
   --shadow-retro: 4px 4px 0px rgba(0, 0, 0, 0.2);
-  --font-retro: 'Permanent Marker', cursive;
-  --font-main: 'Poppins', sans-serif;
+  --font-retro: 'Playball', cursive;
+  --font-main: 'Quicksand', sans-serif;
 }
 
 * {
@@ -68,7 +68,7 @@ body {
   height: 90vh;
 }
 
-/* Contenido interno común */
+/* Contenido interno comÃºn */
 .form-content,
 .info-content {
   padding: 30px;
@@ -89,7 +89,7 @@ body {
   max-height: 100%;
 }
 
-/* Decoración del panel del formulario */
+/* DecoraciÃ³n del panel del formulario */
 .form-panel::after {
   content: '';
   position: absolute;
@@ -102,19 +102,42 @@ body {
   z-index: 1;
 }
 
-/* Panel de información */
+/* Panel de informaciÃ³n */
 .info-panel {
   background-image: url('../imgs/Black and Orange Simple Travel Agency Logo (1) 1.png');
   color: var(--color-white);
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   background-size: cover;
   background-position: center;
+  position: relative;
+  overflow: hidden;
+  padding: 30px;
+  box-shadow: var(--shadow-retro);
+  background-color: rgba(0, 0, 0, 0.4);
   background-blend-mode: overlay;
-  padding: 30px; /* padding uniforme */
-  box-sizing: border-box;
+}
+
+
+.zigzag-decoration {
+  position: absolute;
+  top: 88%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 120px; /* Tamaño base */
+  rotate: 10deg;
+}
+
+.dot-decoration {
+  position: absolute;
+  bottom: 70%;
+  mr: 80px;
+  left: 95%;
+  z-index: 5;
+  width: 180px; /* Tamaño base */
+  opacity: 0.7
 }
 
 .info-content {
@@ -129,14 +152,13 @@ body {
   box-sizing: border-box;
 }
 
-/* Título principal retro */
+/* Tí­tulo principal retro */
 .retro-title {
   font-family: var(--font-retro);
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: var(--color-navy);
   text-shadow: 3px 3px 0px var(--color-yellow);
   margin-bottom: 30px;
-  transform: rotate(-2deg);
 }
 
 /* Barra de progreso con zigzag */
@@ -144,7 +166,7 @@ body {
   position: relative;
   width: 100%;
   height: 15px;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: var(--color-white);
   border-radius: 10px;
   margin: 20px 0;
   overflow: hidden;
@@ -152,25 +174,10 @@ body {
 
 .progress-bar {
   height: 100%;
-  background: var(--gradient-sunset);
+  background: var(--color-teal);
   border-radius: 10px;
   width: 4%;
   transition: width 0.5s ease-in-out;
-}
-
-.progress-zigzag {
-  position: absolute;
-  top: 0;
-  right: 20px;
-  width: 60px;
-  height: 15px;
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--color-yellow),
-    var(--color-yellow) 5px,
-    transparent 5px,
-    transparent 10px
-  );
 }
 
 /* Contador de pasos */
@@ -178,13 +185,13 @@ body {
   text-align: center;
   margin-bottom: 25px;
   font-weight: 700;
+  margin-top: 25px;
   color: var(--color-navy);
   font-size: 1.1rem;
   background-color: var(--color-yellow);
   display: inline-block;
   padding: 5px 15px;
   border-radius: 20px;
-  transform: rotate(-2deg);
   box-shadow: var(--shadow-retro);
 }
 
@@ -212,7 +219,7 @@ body {
   left: 0;
   width: 100%;
   height: 5px;
-  background: linear-gradient(90deg, var(--color-teal), var(--color-yellow));
+  background: var(--color-teal);
 }
 
 .step-container.active {
@@ -221,7 +228,7 @@ body {
   transform: translateY(0);
 }
 
-/* Títulos y descripciones de pasos */
+/* TÃ­tulos y descripciones de pasos */
 .step-title {
   font-size: 1.5rem;
   margin-bottom: 15px;
@@ -256,6 +263,12 @@ body {
   height: 0;
 }
 
+.error-label {
+  color: #ff4a4a;
+  font-size: 1.2rem;
+  margin-left: 5px;
+}
+
 .option-button {
   display: flex;
   flex-direction: column;
@@ -269,9 +282,9 @@ body {
   transition: all 0.2s ease;
   font-weight: 500;
   font-size: 1.1rem;
-  min-width: 60px;
+  width: 13vh;
   text-align: center;
-  height: 100%;
+  height: 11vh;
   box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
 }
 
@@ -296,7 +309,7 @@ body {
   opacity: 0.8;
 }
 
-/* Botones categoría más grandes */
+/* Botones categorÃ­a mÃ¡s grandes */
 .category-buttons .option-button {
   min-width: 120px;
   padding: 15px;
@@ -337,7 +350,7 @@ input[type="text"]:focus {
   font-weight: bold;
 }
 
-/* Botones de navegación */
+/* Botones de navegaciÃ³n */
 .nav-buttons {
   display: flex;
   justify-content: space-between;
@@ -401,14 +414,15 @@ input[type="text"]:focus {
 
 .description-content h2 {
   font-family: var(--font-retro);
-  font-size: 2rem;
+  margin-bottom: 100px;
+  font-size: 2.5rem;
   margin-bottom: 30px;
   color: var(--color-yellow);
   text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5);
 }
 
 .description-content p {
-  font-size: 1.2rem;
+  font-size: 1.65rem;
   margin-bottom: 20px;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
@@ -423,11 +437,14 @@ input[type="text"]:focus {
   z-index: 1;
 }
 
-
 /* Contenido de resultados */
 .result-content {
   position: relative;
-  z-index: 2;
+  z-index: 3;
+  padding: 25px:
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
 }
 
 .result-content h2 {
@@ -465,6 +482,7 @@ input[type="text"]:focus {
 
 .result-summary {
   margin-bottom: 30px;
+  ;
 }
 
 .result-summary h3 {
@@ -486,7 +504,6 @@ input[type="text"]:focus {
 }
 
 .result-summary li::before {
-  content: '🏠';
   position: absolute;
   left: 0;
   top: 2px;
@@ -506,6 +523,38 @@ input[type="text"]:focus {
   background: radial-gradient(circle, var(--color-teal) 0%, transparent 70%);
   opacity: 0.3;
   border-radius: 50%;
+}
+
+/* Estilos para el botón de reinicio en el panel de resultados */
+#reset-form {
+  margin-top: 20px;
+  background-color: var(--color-yellow);
+  color: var(--color-navy);
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+#reset-form:hover {
+  background-color: #e5b726;
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* Mejorar la visualización del panel de resultados */
+.result-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.alert {
+  margin: 15px 0;
+  padding: 10px 15px;
+  border-radius: 8px;
+  width: 100%;
+  text-align: center;
 }
 
 /* Animaciones */
@@ -547,6 +596,10 @@ input[readonly] {
   .content-grid {
     grid-template-columns: 1fr;
   }
+
+.zigzag-decoration,
+.dot-decoration {
+    display: none;
   
   .form-panel,
   .info-panel {
@@ -607,6 +660,14 @@ input[readonly] {
   .price-value {
     font-size: 2rem;
   }
+
+  .retro-btn btn-secondary {
+    width: 100%;
+    padding: 15px 25px;
+    font-size: 1.1rem;
+    margin-top: 30px;
+    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3);
+}
   
   .beach-decoration,
   .dot-decoration {
