@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 
+{% block main_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/california-style.css') }}?v=1">
+{% endblock %}
+
 {% block title %}Calculadora de Precios - California Dreamin'{% endblock %}
 
 {% block content %}
     <div class="content-grid">
+        <img src="{{ url_for('static', filename='imgs/zigzag.png') }}" alt="Zigzag" class="zigzag-decoration">
+        <img src="{{ url_for('static', filename='imgs/diamonds.png') }}" alt="Puntos" class="dot-decoration">
         <!-- Panel izquierdo (formulario) -->
         <div class="form-panel">
             <div class="form-content">
@@ -21,7 +27,7 @@
             </div>
             
             <!-- Formulario -->
-            <form id="housing-wizard-form" method="POST" action="{{ url_for('main.predict_page') }}">
+            <form id="housing-wizard-form" method="POST" action="{{ url_for('main.predict_page') }}" enctype="multipart/form-data">
                 
                 <!-- Paso 1: Calidad General -->
                 <div class="step-container active" id="step-1">
@@ -526,7 +532,7 @@
         </div>
         <div class="option-wrapper">
             <input type="radio" id="Cimentación-BrkTil" name="Cimentación" value="BrkTil" required>
-            <label for="Cimentación-BrkTil" class="option-button">Ladrillo/Azulejo</label>
+            <label for="Cimentación-BrkTil" class="option-button">Ladrillo y/o Azulejo</label>
         </div>
         <div class="option-wrapper">
             <input type="radio" id="Cimentación-Wood" name="Cimentación" value="Wood" required>
@@ -590,7 +596,7 @@
         </div>
         <div class="option-wrapper">
             <input type="radio" id="TipoRevestimientoMampostería-Ninguno" name="TipoRevestimientoMampostería" value="Ninguno" required>
-            <label for="TipoRevestimientoMampostería-Ninguno" class="option-button">Sin Revestimiento</label>
+            <label for="TipoRevestimientoMampostería-Ninguno" class="option-button">Sin acabado</label>
         </div>
         <div class="option-wrapper">
             <input type="radio" id="TipoRevestimientoMampostería-Stone" name="TipoRevestimientoMampostería" value="Stone" required>
@@ -672,8 +678,8 @@
     </div>
 </div>
 
-<!-- Botones de navegación (movidos fuera de los steps) -->
-<div class="nav-buttons">
+ <!-- Botones de navegación (movidos fuera de los steps) -->
+ <div class="nav-buttons">
     <button type="button" id="prev-btn" class="retro-btn btn-secondary">
         <span class="btn-icon">◀</span> Anterior
     </button>
@@ -689,49 +695,63 @@
 </div>
 
 <div class="info-panel" id="info-panel">
-    <div class="info-content">
-        <!-- Contenido descriptivo (visible inicialmente) -->
-        <div id="description-content" class="description-content">
-            <h2>¡Bienvenido al futuro... desde los 90!</h2>
-            
-            <p>Santa Mónica, sol, palmeras, walkman en el bolsillo y una casa en el punto de mira.</p>
-            
-            <p>Introduce los datos, dale al botón y descubre si estás ante tu nuevo hogar... o solo soñando despierto.</p>
-            
-            <p>Sin complicaciones. Solo tú, la app y un toque de nostalgia.</p>
-            
-            <div class="beach-decoration"></div>
-            <div class="dot-decoration"></div>
-        </div>
-        
-        <!-- Contenido del resultado (oculto inicialmente) -->
-        <div id="result-content" class="result-content" style="display: none;">
-            <h2>¡Predicción Finalizada!</h2>
-            
-            <div class="price-display">
-                <span class="price-label">Valor estimado:</span>
-                <span class="price-value" id="predicted-value">$0.00</span>
-            </div>
-            
-            <div class="result-summary">
-                <h3>Características clave:</h3>
-                <ul id="key-features">
-                    <!-- Se llenará dinámicamente -->
-                </ul>
-            </div>
-            
-            <button id="reset-form" class="retro-btn btn-secondary">
-                Realizar otra predicción <span class="btn-icon">🔄</span>
-            </button>
-            
-            <div class="result-decoration"></div>
-        </div>
+<div class="info-content">
+<!-- Contenido descriptivo (visible inicialmente) -->
+<div id="description-content" class="description-content">
+    <h2>¡Bienvenido al futuro... desde los 90!</h2>
+    
+    <p>Santa Mónica, sol, palmeras, walkman en el bolsillo y una casa en el punto de mira.</p>
+    
+    <p>Introduce los datos, dale al botón y descubre si estás ante tu nuevo hogar... o solo soñando despierto.</p>
+    
+    <p>Sin complicaciones. Solo tú, la app y un toque de nostalgia.</p>
+    
+    <div class="beach-decoration"></div>
+    <div class="dot-decoration"></div>
+</div>
+
+<!-- Contenido del resultado (oculto inicialmente) -->
+<div id="result-content" class="result-content {% if prediction_result is not none %}fade-in{% endif %}" 
+     style="display: {% if prediction_result is not none %}block{% else %}none{% endif %};">
+    <h2>Resultado de la Predicción</h2>
+    <div class="price-display">
+        <span class="price-label">Precio Estimado:</span>
+        <span class="price-value">
+            {% if prediction_result %}
+                ${{ "{:,.2f}".format(prediction_result) }}
+            {% else %}
+                (No disponible)
+            {% endif %}
+        </span>
     </div>
+    {% if success_message %}
+    <div class="alert alert-success">
+        {{ success_message }}
+    </div>
+    {% endif %}
+    {% if error_message %}
+    <div class="alert alert-danger">
+        {{ error_message }}
+    </div>
+    {% endif %}
+    
+    <div class="result-summary">
+        <h3>Características clave:</h3>
+        <ul id="key-features">
+            <!-- Se llenará dinámicamente -->
+        </ul>
+    </div>
+
+    <!-- Botón de reinicio dentro del panel de resultados -->
+    <button type="button" id="reset-form" class="retro-btn btn-secondary">
+        <span class="btn-icon">🔄</span> Reiniciar formulario
+    </button>
+</div>
+</div>
 </div>
 </div><!-- Cierre del content-grid -->
-</div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/california-predict.js') }}"></script>
+<script src="{{ url_for('static', filename='js/california-form.js') }}"></script>
 {% endblock %}

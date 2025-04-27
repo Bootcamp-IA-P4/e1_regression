@@ -46,21 +46,22 @@ class Prediction:
         """
         if self.id:
             log.warning(f"Intento de actualizar Prediction ID {self.id}. Esta operación no está soportada.")
-            # Podrías implementar la actualización si realmente la necesitas, pero es inusual.
-            # raise NotImplementedError("La actualización de predicciones no está implementada.")
-            return self # O devolver None/lanzar error
+            return self
 
         if not self.property_id:
              raise ValueError("Se requiere 'property_id' para guardar una Prediction.")
+
+        # Validación de rango para evitar valores absurdos
+        if self.predicted_value is not None:
+            if self.predicted_value < 0 or self.predicted_value > 2_000_000:
+                log.error(f"Predicción fuera de rango: {self.predicted_value}")
+                raise ValueError(f"Predicción fuera de rango almacenable: {self.predicted_value}")
 
         data_to_save = {
             'property_id': self.property_id,
             'predicted_value': self.predicted_value,
             'actual_value': self.actual_value
-            # 'created_at' lo maneja la BD o lo podemos pasar explícitamente si lo tenemos:
-            # 'created_at': self.created_at
         }
-        # Quitar 'actual_value' si es None para depender del default NULL de la tabla
         if data_to_save['actual_value'] is None:
              data_to_save.pop('actual_value', None)
 
@@ -68,8 +69,6 @@ class Prediction:
             last_id = insert_and_get_id('predictions', data_to_save)
             if last_id:
                 self.id = last_id
-                # No podemos obtener created_at de la BD aquí fácilmente sin otra consulta.
-                # Si lo necesitamos actualizado, tendríamos que hacer un find_by_id(last_id)
                 log.info(f"Nueva Prediction creada con ID: {self.id} para Property ID: {self.property_id}")
             else:
                  log.error("insert_and_get_id devolvió None/0 sin lanzar excepción para Prediction.")

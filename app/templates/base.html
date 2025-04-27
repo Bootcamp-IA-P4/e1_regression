@@ -6,7 +6,9 @@
         <title>{% block title %}Predicción de Vivienda{% endblock %}</title>
         <!-- Estilos comunes -->
         <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/california-style.css') }}">
+        {% block main_css %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}?v=1">
+        {% endblock %}
         <!-- Estilos específicos para otras páginas -->
         {% block styles %}{% endblock %}
     </head>
