@@ -7,6 +7,7 @@
 {% block title %}Inicio - Predicciones Recientes{% endblock %}
 
 {% block content %}
+<div class="main-content-container">
 <h1>Bienvenido al Sistema de Predicción de Vivienda</h1>
 <p>Esta aplicación utiliza un modelo de Machine Learning para predecir el valor medio de las viviendas basado en características de la zona.</p>
 <p><a href="{{ url_for('main.predict_page') }}" class="btn btn-success">Realizar una Nueva Predicción</a></p> {# Ejemplo Bootstrap #}

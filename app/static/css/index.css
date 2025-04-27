@@ -27,17 +27,21 @@
 
 body {
     font-family: var(--font-main);
-    line-height: 1.6;
+    width: 100%;
     background-color: var(--color-dark);
     color: var(--color-white);
-    padding: 20px;
-    background-image: 
-        radial-gradient(circle at 10% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 30%),
-        radial-gradient(circle at 90% 10%, rgba(255, 127, 80, 0.05) 0%, transparent 30%),
-        linear-gradient(to bottom, var(--color-dark), #121212);
-    position: relative;
+    line-height: 1.6;
     overflow-x: hidden;
-}
+    min-height: 100vh; /* Asegurar que el body cubra toda la altura visible */
+    margin: 0; /* Eliminar cualquier margen por defecto */
+    padding: 0;
+    display: flex; /* Usar flexbox para el layout principal */
+    flex-direction: column; /* Organizar elementos en columna */
+    background-image: 
+      radial-gradient(circle at 10% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 30%),
+      radial-gradient(circle at 90% 10%, rgba(255, 127, 80, 0.05) 0%, transparent 30%),
+      linear-gradient(to bottom, var(--color-dark), #121212);
+  }
 
 /* --- Elementos decorativos (zigzag y diamantes) --- */
 .container {
@@ -117,12 +121,19 @@ a:hover {
     padding: 0; 
     overflow: hidden;
     height: auto;
-    margin-bottom: 20px;
     line-height: 0;
-}
+    border-bottom: none;
+  }
 
-.navbar-content {
-    max-width: 1200px; /* Ancho máximo para el navbar */
+  .main-navbar + hr {
+    margin: 0;
+    padding: 0;
+    height: 1px;
+    border-top: 4px solid var(--color-teal);
+  }
+  
+  .navbar-content {
+    max-width: 1300px; 
     margin: 0 auto;
     display: flex;
     justify-content: flex-start;
@@ -130,35 +141,31 @@ a:hover {
     padding: 0 20px;
     position: relative;
     z-index: 2;
-}
-
-.nav-brand {
+  }
+  
+  .nav-brand {
     display: flex;
     align-items: center;
     margin-right: 20px;
-}
-
-.nav-brand img {
-    height: 150px; /* Mantener altura de 150px */
+  }
+  
+  .nav-brand img {
+    height: 150px; 
     width: auto;
     vertical-align: middle;
     transition: transform 0.3s ease;
     margin: 0;
     padding: 0;
-}
-
-.nav-brand:hover img {
-    transform: scale(1.05);
-}
-
-.nav-links {
+  }
+  
+  .nav-links {
     display: flex;
-    align-items: center; /* Centrar verticalmente con el logo */
+    align-items: center; 
     height: 100%;
     gap: 25px;
-}
-
-.nav-links a {
+  }
+  
+  .nav-links a {
     color: var(--color-white);
     text-shadow: var(--shadow-retro);
     text-decoration: none;
@@ -168,18 +175,26 @@ a:hover {
     padding: 8px 15px;
     border-radius: 5px;
     transition: all 0.3s ease;
-}
-
-.nav-links a:hover {
-    background-color: transparent;
+    position: relative;
+    z-index: 5;
+  }
+  
+  .nav-links a:hover {
+    background-color: var(--color-teal);
     padding: 8px 20px;
-    color: var(--color-coral-dark);
-}
-
-.nav-links a.active {
+    color: var(--color-dark);
+    text-decoration: none;
+  }
+  
+  .nav-links a.active {
     background-color: transparent;
     color: var(--color-white);
-}
+  }
+
+  main.container {
+    margin-top: 40px;
+    padding-top: 20px;
+  }
 
 /* Elementos decorativos del navbar */
 .dots-left {
@@ -322,7 +337,7 @@ button[type="submit"]:hover,
 table {
     width: 100%;
     border-collapse: collapse; /* Bordes unidos */
-    margin-top: 25px;
+    margin-top: 40px;
     margin-bottom: 25px;
     box-shadow: var(--shadow-retro);
     border-radius: 10px;
