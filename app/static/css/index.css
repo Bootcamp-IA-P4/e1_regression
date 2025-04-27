@@ -1,16 +1,75 @@
 /* --- Reset y Estilos Base --- */
+@import url('https://fonts.googleapis.com/css2?family=Playball&family=Quicksand:wght@300..700&display=swap');
+
+:root {
+    /* Colores de california-style.css */
+    --color-coral: #F98F6D;
+    --color-coral-light: #ff9e7a;
+    --color-coral-dark: #e55a2b;
+    --color-teal: #4ecdc4;
+    --color-teal-dark: #1a9e9e;
+    --color-yellow: #f9cb40;
+    --color-navy: #0171D3;
+    --color-dark: #2D2D2D;
+    --color-white: #ffffff;
+    --color-light-gray: #f2f2f2;
+    --gradient-sunset: linear-gradient(135deg, #ff8008 0%, #ff5722 100%);
+    --shadow-retro: 4px 4px 0px rgba(0, 0, 0, 0.2);
+    --font-retro: 'Playball', cursive;
+    --font-main: 'Quicksand', sans-serif;
+}
+
 * {
-    box-sizing: border-box; /* Mejor manejo del padding y border */
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-main);
     line-height: 1.6;
-    color: #333;
-    background-color: #f8f9fa; /* Un fondo gris muy claro */
+    background-color: var(--color-dark);
+    color: var(--color-white);
     padding: 20px;
+    background-image: 
+        radial-gradient(circle at 10% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(255, 127, 80, 0.05) 0%, transparent 30%),
+        linear-gradient(to bottom, var(--color-dark), #121212);
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* --- Elementos decorativos (zigzag y diamantes) --- */
+.container {
+    position: relative;
+}
+
+.container::before {
+    content: "";
+    position: absolute;
+    background-image: url('../imgs/zigzag.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 120px;
+    height: 120px;
+    bottom: 20px;
+    right: -40px;
+    z-index: 10;
+    transform: rotate(10deg);
+}
+
+.container::after {
+    content: "";
+    position: absolute;
+    background-image: url('../imgs/diamonds.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 180px;
+    height: 180px;
+    top: 30px;
+    right: -60px;
+    z-index: 5;
+    opacity: 0.7;
 }
 
 /* --- Contenedor Principal --- */
@@ -18,47 +77,158 @@ body {
     max-width: 960px; /* Ancho máximo para el contenido */
     margin: 20px auto; /* Centrar el contenedor */
     padding: 30px;
-    background-color: #ffffff; /* Fondo blanco para el contenido */
+    background-color: var(--color-coral-light);
     border-radius: 8px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    box-shadow: var(--shadow-retro);
 }
 
 /* --- Encabezados --- */
 h1, h2, h3 {
-    color: #0056b3; /* Un azul corporativo */
+    font-family: var(--font-retro);
+    color: var(--color-navy);
+    text-shadow: 3px 3px 0px var(--color-yellow);
     margin-bottom: 0.8em;
     line-height: 1.3;
 }
-h1 { font-size: 2.2em; border-bottom: 2px solid #eee; padding-bottom: 0.3em;}
+h1 { font-size: 2.2em; border-bottom: 2px solid var(--color-teal); padding-bottom: 0.3em;}
 h2 { font-size: 1.6em; }
 h3 { font-size: 1.3em; }
 
 /* --- Párrafos y Links --- */
 p {
     margin-bottom: 1em;
+    color: var(--color-dark);
 }
 
 a {
-    color: #007bff; /* Azul estándar para links */
-    text-decoration: none; /* Quitar subrayado por defecto */
+    color: var(--color-navy);
+    text-decoration: none;
 }
 
 a:hover {
-    color: #0056b3;
-    text-decoration: underline; /* Subrayado al pasar el ratón */
+    color: var(--color-teal-dark);
+    text-decoration: underline; 
 }
 
-/* --- Navegación (si usas la del base.html) --- */
-nav {
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #dee2e6;
+/* --- Navegación (estilo California) --- */
+.main-navbar {
+    background-color: var(--color-dark);
+    position: relative;
+    padding: 0; 
+    overflow: hidden;
+    height: auto;
+    margin-bottom: 20px;
+    line-height: 0;
 }
-nav a {
+
+.navbar-content {
+    max-width: 1200px; /* Ancho máximo para el navbar */
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
     margin-right: 20px;
-    margin-left: 20px;
-    font-weight: 500;
-    font-size: 1.1em;
+}
+
+.nav-brand img {
+    height: 150px; /* Mantener altura de 150px */
+    width: auto;
+    vertical-align: middle;
+    transition: transform 0.3s ease;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-brand:hover img {
+    transform: scale(1.05);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center; /* Centrar verticalmente con el logo */
+    height: 100%;
+    gap: 25px;
+}
+
+.nav-links a {
+    color: var(--color-white);
+    text-shadow: var(--shadow-retro);
+    text-decoration: none;
+    font-size: 23px;
+    font-weight: 600;
+    font-family: var(--font-retro);
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    background-color: var(--color-teal);
+    padding: 8px 20px;
+    color: var(--color-dark);
+}
+
+.nav-links a.active {
+    background-color: var(--color-navy);
+    color: var(--color-white);
+}
+
+/* Elementos decorativos del navbar */
+.dots-left {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80px;
+    height: 80px;
+    background-image: url("../imgs/dotsblue.png");  /* Ruta relativa corregida */
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+}
+
+.dots-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 80px;
+    height: 80px;
+    background-image: url("../imgs/dotsnavy.png");  /* Ruta relativa corregida */
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+}
+
+.zigzag-corner {
+    position: absolute;
+    right: 0;
+    bottom: -10px;
+    width: 120px;
+    height: 80px;
+    background-image: url("../imgs/zigzagblue.png");  /* Ruta relativa corregida */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    opacity: 0.8;
+}
+
+.custom-navbar-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("../imgs/navbar-background.jpg"); /* Ruta relativa corregida */
+    background-size: cover;
+    background-position: center;
+    opacity: 0.5; /* Ajusta la opacidad según sea necesario */
 }
 
 /* --- Formularios --- */
@@ -117,12 +287,38 @@ button[type="submit"]:hover,
 }
 
 .btn-success { /* Clase específica si la usaste en el HTML */
-    background-color: #28a745; /* Verde */
+    background-color: var(--color-teal); /* Verde */
 }
 .btn-success:hover {
-    background-color: #218838;
+    background-color: var(--color-teal-dark);
 }
 
+/* --- Botones --- */
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 500;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-retro);
+}
+
+.btn-success {
+    background-color: var(--color-teal);
+    color: var(--color-white);
+}
+
+.btn-success:hover {
+    background-color: var(--color-teal-dark);
+    transform: translateY(-2px);
+    color: var(--color-white);
+    text-decoration: none;
+}
 
 /* --- Tablas (para index.html) --- */
 table {
@@ -130,28 +326,85 @@ table {
     border-collapse: collapse; /* Bordes unidos */
     margin-top: 25px;
     margin-bottom: 25px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-retro);
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 th, td {
     padding: 12px 15px; /* Más espaciado interno */
     text-align: left;
-    border-bottom: 1px solid #dee2e6; /* Líneas horizontales suaves */
+    border-bottom: 1px solid var(--color-teal-dark);
 }
 
 thead th {
-    background-color: #e9ecef; /* Cabecera gris claro */
+    background-color: var(--color-teal-dark); /* Cabecera gris claro */
     color: #495057;
     font-weight: 600;
     border-top: 1px solid #dee2e6;
 }
 
 tbody tr:nth-child(even) {
-    background-color: #f8f9fa; /* Rayas zebra sutiles */
+    background-color: var(--color-teal);
 }
 
 tbody tr:hover {
-    background-color: #e9ecef; /* Resaltar fila al pasar */
+    background-color: #919191;
+}
+
+/* --- Tablas (para index.html) --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow-retro);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-teal-dark);
+}
+
+thead th {
+    background-color: var(--color-teal);
+    color: var(--color-white);
+    font-weight: 600;
+}
+
+tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+tbody tr:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+tbody tr:hover {
+    background-color: var(--color-light-gray);
+}
+
+/* --- Mejoras para texto en la tabla --- */
+td, th {
+    color: var(--color-dark);
+}
+
+td strong {
+    color: var(--color-coral-dark);
+    font-weight: 700;
+}
+
+/* --- Mensaje sin predicciones --- */
+.container p:last-child {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-retro);
+    text-align: center;
+    color: var(--color-dark);
 }
 
 /* --- Mensajes Flash y Alertas (Resultado predicción) --- */
@@ -193,18 +446,52 @@ tbody tr:hover {
 /* --- Elementos específicos (si los tienes) --- */
 hr {
     border: 0;
-    height: 1px;
-    background-color: #dee2e6;
+    height: 3px;
+    background-color: var(--color-teal);
     margin: 30px 0;
 }
 
 footer {
+    background-color: var(--color-dark);
+    color: var(--color-white);
+    padding: 30px 0;
     margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #dee2e6;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+footer .nav-brand {
+    display: block;
+    margin: 0 auto 20px;
+    width: fit-content;
+}
+
+footer .nav-brand img {
+    height: 150px; /* Aumentado a 150px como solicitado */
+    width: auto;
+    margin: 0 auto;
+    display: block;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
     font-size: 0.9em;
-    color: #6c757d;
+    line-height: 1.6;
+}
+
+footer a {
+    color: var(--color-teal);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: var(--color-yellow);
+    text-decoration: underline;
 }
 
 /* --- Mejoras Responsive (Opcional Básico) --- */
@@ -213,24 +500,48 @@ footer {
     .container { padding: 20px; margin: 10px auto; }
     h1 { font-size: 1.8em; }
     h2 { font-size: 1.4em; }
-    /* Podrías ajustar más cosas, como el tamaño de fuente o la disposición de la tabla */
-    table, thead, tbody, th, td, tr {
-        display: block; /* Convierte la tabla en bloques */
+    
+    /* Ajuste para decoraciones */
+    .container::before {
+        width: 80px;
+        height: 80px;
+        right: -10px;
+        bottom: 10px;
     }
+    
+    .container::after {
+        width: 100px;
+        height: 100px;
+        top: 20px;
+        right: -20px;
+    }
+    
+    /* Tabla responsiva */
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+    
     thead tr {
-        position: absolute; /* Oculta cabecera tradicional */
+        position: absolute;
         top: -9999px;
         left: -9999px;
     }
-     tr { border: 1px solid #ccc; margin-bottom: 10px; }
-     td {
+    
+    tr {
+        border: 1px solid var(--color-teal);
+        margin-bottom: 10px;
+        background-color: rgba(255, 255, 255, 0.9) !important;
+    }
+    
+    td {
         border: none;
         border-bottom: 1px solid #eee;
         position: relative;
-        padding-left: 50%; /* Espacio para la pseudo-cabecera */
+        padding-left: 50%;
         text-align: right;
-     }
-     td:before { /* Añade la cabecera como etiqueta */
+    }
+    
+    td:before {
         position: absolute;
         left: 6px;
         width: 45%;
@@ -238,7 +549,43 @@ footer {
         white-space: nowrap;
         text-align: left;
         font-weight: bold;
-        content: attr(data-label); /* Necesitarías añadir data-label="Nombre Columna" a cada TD en el HTML */
-     }
-     /* NOTA: La tabla responsive así requiere modificar el HTML de la tabla */
+        content: attr(data-label);
+    }
+}
+
+/* Footer estilo California */
+footer {
+    background-color: var(--color-dark);
+    color: var(--color-white);
+    padding: 20px 0;
+    margin-top: 40px;
+    text-align: center;
+    font-size: 0.9em;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .dots-left, .dots-right {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .zigzag-corner {
+        width: 80px;
+        height: 60px;
+    }
 }
