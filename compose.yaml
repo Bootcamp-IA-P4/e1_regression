@@ -1,0 +1,49 @@
+services:
+
+  # Servicio de la aplicación Python (tu app Flask)
+  app:
+    build: . # Construye la imagen usando el Dockerfile en el directorio actual (la raíz)
+    ports:
+      - "5000:5000" # Mapea el puerto 5000 del host (tu máquina) al puerto 5000 del contenedor
+    environment: # Define variables de entorno para el contenedor 'app' (leídas por tu config.py)
+      SECRET_KEY: tu_clave_secreta_aqui # ¡Cambia esto por una clave segura!
+      MYSQL_HOST: db # El nombre del servicio de la base de datos en Docker Compose
+      MYSQL_USER: myuser # Usuario para la aplicación (debe coincidir con el creado en el servicio db)
+      MYSQL_PASSWORD: mypassword_for_app # Contraseña para el usuario de la aplicación
+      MYSQL_DB: housing_predictions # Nombre de la base de datos (debe coincidir con el creado en el servicio db)
+      MODEL_PATH: 'model/modelo_ridge_california_housing.pkl'
+      FLASK_ENV: development # O 'production' para configurar la app
+      
+      # MODEL_PATH: model/modelo_ridge_california_housing.pkl # Si quieres SOBRESCRIBIR la ruta del modelo definida en config.py con la variable de entorno
+
+    # Si quieres que los cambios en el código local se reflejen INSTANTÁNEAMENTE sin reconstruir la imagen (útil en desarrollo)
+    # Descomenta la siguiente sección. Para producción, es mejor NO usar volumes para el código.
+    # volumes:
+    #   - .:/app # Monta la carpeta raíz local completa en /app dentro del contenedor
+    #   - /app/node_modules # Si tuvieras node_modules u otras carpetas generadas dentro del contenedor que no quieres sobreescribir
+
+    depends_on:
+      - db # Asegura que el servicio 'db' (la base de datos) se inicie antes que 'app'
+
+  # Servicio de la base de datos MySQL
+  db:
+    image: mysql:8.0 # Usa una imagen oficial de MySQL (puedes elegir otra versión si necesitas)
+    # ports:
+    #   - "3306:3306" # Opcional: mapea el puerto de la DB al host. Útil si quieres conectar con MySQL Workbench, DBeaver, etc. NO es necesario para que la app se conecte.
+    environment: # Variables de entorno para configurar el contenedor MySQL (ver documentación oficial de MySQL Docker)
+      MYSQL_ROOT_PASSWORD: your_root_password # ¡CAMBIA esto por una contraseña root segura!
+      MYSQL_DATABASE: housing_predictions # Nombre de la base de datos que se creará
+      MYSQL_USER: myuser # Usuario que se creará
+      MYSQL_PASSWORD: mypassword_for_app # Contraseña para ese usuario (¡debe coincidir con la del servicio 'app'!)
+    volumes:
+      # Persiste los datos de la base de datos en un volumen con nombre.
+      # Esto evita perder los datos cuando el contenedor se detiene o elimina.
+      - db_data:/var/lib/mysql
+
+      # Monta tu carpeta 'database' local a la ubicación donde MySQL ejecuta scripts de inicialización
+      # Esto ejecutará schema.sql y seed.sql la primera vez que se cree el contenedor 'db'
+      - ./database:/docker-entrypoint-initdb.d
+
+# Definición de los volúmenes con nombre que se usarán
+volumes:
+  db_data: # Este volumen se usará para almacenar los datos persistentes de MySQL
