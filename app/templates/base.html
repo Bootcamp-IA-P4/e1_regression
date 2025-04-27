@@ -19,13 +19,14 @@
         <div class="zigzag-corner"></div>
         
         <div class="navbar-content">
+            <div class="custom-image-container">
+                <img src="{{ url_for('static', filename='imgs/svglogo.svg') }}" alt="Imagen personalizada" class="custom-navbar-image">
+            </div>
             <a href="{{ url_for('main.index') }}" class="nav-brand">
                 <img src="{{ url_for('static', filename='imgs/dreamingblue.png') }}" alt="California Dreaming">
             </a>
             <div class="nav-links">
-                <div class="custom-image-container">
-                    <img src="{{ url_for('static', filename='imgs/svglogo.svg') }}" alt="Imagen personalizada" class="custom-navbar-image">
-                </div>
+                
                 <a href="{{ url_for('main.predict_page') }}" {% if request.endpoint == 'main.predict_page' %}class="active"{% endif %}>Calcular Precio</a>
             </div>
         </div>

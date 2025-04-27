@@ -171,13 +171,13 @@ a:hover {
 }
 
 .nav-links a:hover {
-    background-color: var(--color-teal);
+    background-color: transparent;
     padding: 8px 20px;
-    color: var(--color-dark);
+    color: var(--color-coral-dark);
 }
 
 .nav-links a.active {
-    background-color: var(--color-navy);
+    background-color: transparent;
     color: var(--color-white);
 }
 
@@ -220,15 +220,13 @@ a:hover {
 }
 
 .custom-navbar-image {
-    position: absolute;
+    height: 80px;
     top: 0;
     left: 0;
+    max-width: 100%;
+    margin-right: 20px;
     width: 100%;
-    height: 100%;
-    background-image: url("../imgs/navbar-background.jpg"); /* Ruta relativa corregida */
-    background-size: cover;
-    background-position: center;
-    opacity: 0.5; /* Ajusta la opacidad según sea necesario */
+    opacity: 0.5; 
 }
 
 /* --- Formularios --- */

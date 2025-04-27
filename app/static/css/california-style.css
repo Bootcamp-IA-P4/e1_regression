@@ -35,6 +35,137 @@ body {
     linear-gradient(to bottom, var(--color-dark), #121212);
 }
 
+.main-navbar {
+  background-color: var(--color-dark);
+  position: relative;
+  padding: 0; 
+  overflow: hidden;
+  height: auto;
+  margin-bottom: 20px;
+  line-height: 0;
+}
+
+.navbar-content {
+  max-width: 1200px; 
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.nav-brand img {
+  height: 150px; 
+  width: auto;
+  vertical-align: middle;
+  transition: transform 0.3s ease;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center; 
+  height: 100%;
+  gap: 25px;
+}
+
+.nav-links a {
+  color: var(--color-white);
+  text-shadow: var(--shadow-retro);
+  text-decoration: none;
+  font-size: 23px;
+  font-weight: 600;
+  font-family: var(--font-retro);
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 5;
+}
+
+.nav-links a:hover {
+  background-color: var(--color-teal);
+  padding: 8px 20px;
+  color: var(--color-dark);
+  text-decoration: none;
+}
+
+.nav-links a.active {
+  background-color: transparent;
+  color: var(--color-white);
+}
+
+/* Elementos decorativos del navbar */
+.dots-left {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 80px;
+  background-image: url("../imgs/dotsblue.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.dots-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 80px;
+  height: 80px;
+  background-image: url("../imgs/dotsnavy.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.zigzag-corner {
+  position: absolute;
+  right: 0;
+  bottom: -10px;
+  width: 120px;
+  height: 80px;
+  background-image: url("../imgs/zigzagblue.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.custom-image-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-right: 20px;
+  position: relative;
+  width: 80px;
+}
+
+.custom-navbar-image {
+  height: 80px;
+  width: auto;
+  max-width: 100%;
+  transition: transform 0.3s ease;
+  opacity: 0.5;
+}
+
+.custom-navbar-image:hover {
+  transform: rotate(10deg);
+}
+
 /* Contenedor principal */
 .california-container {
   max-width: 1200px;
@@ -133,7 +264,6 @@ body {
 .dot-decoration {
   position: absolute;
   bottom: 70%;
-  mr: 80px;
   left: 95%;
   z-index: 5;
   width: 180px; /* Tamaño base */
@@ -441,7 +571,7 @@ input[type="text"]:focus {
 .result-content {
   position: relative;
   z-index: 3;
-  padding: 25px:
+  padding: 25px;
   width: 90%;
   max-width: 500px;
   text-align: center;
@@ -591,6 +721,50 @@ input[readonly] {
   cursor: not-allowed;
 }
 
+/* --- Footer mejorado --- */
+footer {
+  background-color: var(--color-dark);
+  color: var(--color-white);
+  padding: 30px 0;
+  margin-top: 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+footer .nav-brand {
+  display: block;
+  margin: 0 auto 20px;
+  width: fit-content;
+}
+
+footer .nav-brand img {
+  height: 150px;
+  width: auto;
+  margin: 0 auto;
+  display: block;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+footer a {
+  color: var(--color-teal);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: var(--color-yellow);
+  text-decoration: underline;
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .content-grid {
@@ -673,4 +847,5 @@ input[readonly] {
   .dot-decoration {
     display: none; 
   }
+}
 }
