@@ -24,7 +24,6 @@ def create_app(config_name=None):
                         format='[%(asctime)s] %(levelname)s in %(module)s: %(message)s')
 
     app.logger.info(f"Iniciando aplicación con configuración: {config_name}")
-    app.logger.debug(f"Configuración cargada: {app.config}")
 
     # Inicializar extensiones
     try:
