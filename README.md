@@ -5,7 +5,9 @@
     <img src="https://img.shields.io/badge/Data-Prediction-4ECDC4?style=for-the-badge&logo=spark&logoColor=white" alt="Data Prediction">
 </div>
 
-> *"Construye tu casa en California, pero asegúrate de que tu modelo de predicción esté bien testeado..."* - Inspiración de Venice Beach, circa 2024
+> *Santa Mónica, sol, palmeras, walkman en el bolsillo y una casa en el punto de mira...*
+
+¡Bienvenido a los 90s! Una época donde los sueños de tener una casa en California parecían tan alcanzables como encontrar un casete de Nirvana en oferta. En este viaje nostálgico, hemos creado un predictor de precios inmobiliarios que combina la potencia de machine learning con la estética vibrante de la Costa Oeste.
 
 ## 🎵 Bienvenido al Sistema Inteligente de Predicción de Precios 🎵
 
