@@ -78,9 +78,11 @@ body {
 
 /* --- Contenedor Principal --- */
 .container {
-    max-width: 960px; /* Ancho máximo para el contenido */
-    margin: 20px auto; /* Centrar el contenedor */
+    max-width: 1100px; /* Ancho máximo para el contenido */
+    margin: 80px auto; /* Centrar el contenedor */
     padding: 30px;
+    display: flex;
+    align-items: center;
     background-color: var(--color-coral-light);
     border-radius: 8px; /* Bordes redondeados */
     box-shadow: var(--shadow-retro);
@@ -102,6 +104,8 @@ h3 { font-size: 1.3em; }
 p {
     margin-bottom: 1em;
     color: var(--color-dark);
+    font-size: 1.1em;
+    font-weight: bold;
 }
 
 a {
