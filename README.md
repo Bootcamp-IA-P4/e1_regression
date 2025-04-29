@@ -1,252 +1,249 @@
-# API de Predicción de Precios de Vivienda con Flask  predicting-housing-api
+# 🏄‍♂️ CALIFORNIA DREAMIN' 🌴
 
-✨ Un API web construida con Flask para predecir el valor medio de las viviendas utilizando un modelo de Machine Learning preentrenado, almacenando los datos y resultados en una base de datos MySQL. ✨
+![Banner](https://img.shields.io/badge/California-Dreamin'-ff9e7a?style=for-the-badge&logo=california&logoColor=white)
 
-## 🚀 Descripción General
+> *"Construye tu casa en California, pero asegúrate de que tu modelo de predicción esté bien testeado..."* - Proverbio de Venice Beach, circa 1995
 
-Este proyecto implementa una API RESTful y una interfaz web simple utilizando el microframework Flask. Permite a los usuarios ingresar características de una zona residencial (basadas en el dataset California Housing) y obtener una predicción del valor medio de la vivienda en esa área, generada por un modelo de regresión previamente entrenado.
+## 🎵 Bienvenido al Sistema Radical de Predicción de Precios 🎵
 
-La aplicación guarda cada conjunto de características ingresadas (como una 'propiedad') y su predicción correspondiente en una base de datos MySQL para su posterior análisis o visualización.
+¡Cowabunga! Has encontrado la aplicación más tubular de predicción de precios de viviendas ambientada en los mejores años 90. Época de Nirvana, Tamagotchis y sueños de tener una mansión en Malibú, cuando los precios inmobiliarios eran tan volátiles como los peinados de Boy Bands. ¡Totally awesome!
 
-## 📋 Características Principales
+## 🌊 La Historia (As Told By MTV) 🌊
 
-*   **Interfaz Web Simple:**
-    *   Página de inicio (`/`) que muestra predicciones recientes.
-    *   Formulario (`/predict`) para ingresar datos y obtener una predicción instantánea.
-*   **API RESTful:**
-    *   Endpoint (`POST /api/v1/predictions`) para realizar predicciones programáticamente enviando datos JSON.
-*   **Modelo de ML:** Carga un modelo de regresión preentrenado (formato `.pkl`) para realizar las predicciones.
-*   **Persistencia en Base de Datos:** Almacena las características de entrada (`properties`) y los resultados de la predicción (`predictions`) en una base de datos MySQL.
-*   **Estructura Organizada:** Sigue un patrón de diseño modular con Blueprints, modelos de datos, utilidades y configuración separada.
-*   **Configuración Flexible:** Utiliza variables de entorno (`.env`) para gestionar la configuración sensible (claves secretas, credenciales de BD, ruta del modelo).
-*   **Estilo Personalizado:** Incluye un archivo CSS básico para una presentación limpia.
+Todo comenzó cuando cuatro valientes programadores encontraron un dataset llamado California Housing y decidieron darle un giro noventero:
 
-## ⚙️ Tecnologías Utilizadas
+1. **El EDA Más Radical** 🔍: Exploramos profundamente el dataset California Housing, identificando outliers, correlaciones y patrones ocultos en los datos como detective de "Los Expedientes Secretos X". Documentamos todo el proceso en `eda/california-housing-eda.ipynb`.
 
-*   **Backend:** Python 3.x
-*   **Framework Web:** Flask
-*   **Base de Datos:** MySQL
-*   **Conector BD:** Flask-MySQLdb (basado en `mysqlclient` o compatible)
-*   **Manipulación de Datos (Predicción):** Pandas
-*   **Carga de Modelo:** Pickle (o Joblib si cambias el loader)
-*   **Gestión de Entorno:** `venv`, `python-dotenv`
-*   **Frontend:** HTML5, CSS3, Jinja2 (motor de plantillas de Flask)
-*   **Servidor de Desarrollo:** Werkzeug (integrado con Flask)
+2. **Traducción y Transformación** 🔄: Convertimos las unidades del sistema imperial al métrico (adiós pies cuadrados, hola metros cuadrados), tradujimos todas las variables al español y limpiamos los datos para obtener nuestro propio dataset `train_es_clean.csv`. ¡Hasta la vista, baby!
 
-![Python](https://img.shields.io/badge/Python-3.x-blue?style=flat-square&logo=python)
+3. **Batalla de Algoritmos** 🥊: Entrenamos y evaluamos múltiples modelos de regresión:
+   - Regresión Lineal: El clásico, como las Converse All-Star
+   - Regresión Ridge: El equilibrado, como un monopatín bien ajustado
+   - Árboles de Decisión: El estructurado, como un walkman bien organizado
+   - Regresión Bayesiana: El sofisticado, como un discman con anti-skip
+
+4. **Ridge: El Campeón Indiscutible** 👑: Después de rigurosas pruebas y comparaciones (documentadas en `ml-models/ridge-regression.ipynb`), nuestro modelo Ridge emergió como el ganador por su mejor rendimiento, estabilidad y capacidad para manejar multicolinealidad.
+
+## 🎮 Features Más Cool Que un Game Boy Color 🎮
+
+* **Diseño Inspirado en los 90s** 💾: Colores vibrantes, sombras audaces y patrones geométricos que harían sentir en casa a Zack Morris
+* **Modelo Ridge Optimizado** 📊: Un modelo de predicción más preciso que las predicciones de Nostradamus en MTV
+* **Interfaz Paso a Paso** 🚶: Una experiencia guiada más clara que las instrucciones de un VHS
+* **Persistencia en MySQL** 📜: Almacenamiento de datos más confiable que tus cintas de casete favoritas
+* **Flask + Docker** 💪: Una combinación más poderosa que los Mighty Morphin Power Rangers
+* **Tests Automatizados** 🧪: Verificación de funcionalidad más completa que un chequeo de tu Tamagotchi
+
+## 📊 Variables del Modelo Ridge 📊
+
+Nuestro campeón, el modelo Ridge, utiliza estas variables para sus predicciones (como Capitán Planeta usa los poderes de su anillo):
+
+### Variables Numéricas:
+- `CalidadGeneral`: Clasificación general de la vivienda (1-10)
+- `MetrosHabitables`: Área habitable en metros cuadrados
+- `CochesGaraje`: Capacidad del garaje en número de coches
+- `AreaGaraje`: Superficie del garaje en metros cuadrados
+- `MetrosTotalesSotano`: Área total del sótano en metros cuadrados
+- `Metros1raPlanta`: Superficie de la primera planta en metros cuadrados
+- `BañosCompletos`: Número de baños completos
+- `TotalHabitacionesSobreSuelo`: Número de habitaciones (sin contar sótano)
+- `AñoConstrucción`: Año en que se construyó la vivienda
+- `AñoRenovación`: Año de la última renovación
+- `AreaRevestimientoMampostería`: Superficie de revestimiento en metros cuadrados
+- `Chimeneas`: Número de chimeneas
+- `MetrosAcabadosSótano1`: Área habitable del sótano en metros cuadrados
+- `FrenteLote`: Ancho frontal del terreno en metros
+
+### Variables Categóricas:
+- `CalidadExterior`: Calidad de materiales exteriores (Ex, Gd, TA, Fa)
+- `CalidadCocina`: Calidad de la cocina (Ex, Gd, TA, Fa)
+- `CalidadSótano`: Altura y acabado del sótano (Ex, Gd, TA, Fa, NoSótano)
+- `AcabadoGaraje`: Tipo de acabado interior del garaje (Fin, RFn, Unf, NoGaraje)
+- `AireAcondicionadoCentral`: Presencia de A/C central (Y, N)
+- `CalidadChimenea`: Calidad de la chimenea (Ex, Gd, TA, Fa, Po, NoTiene)
+- `Cimentación`: Tipo de cimentación (PConc, CBlock, BrkTil, Wood, Slab, Stone)
+- `TipoGaraje`: Ubicación/tipo del garaje (Attchd, Detchd, BuiltIn, CarPort, Basment, NoGaraje)
+- `TipoRevestimientoMampostería`: Material del revestimiento (BrkFace, Stone, BrkCmn, Ninguno)
+- `CalidadCalefacción`: Calidad y condición del sistema de calefacción (Ex, Gd, TA, Fa, Po)
+- `Vecindario`: Ubicación dentro de Ames, Iowa (25 vecindarios distintos)
+
+¡Con estas variables, nuestro modelo Ridge predice precios como Marty McFly viaja en el tiempo: con precisión y estilo!
+
+## 🔧 Mix Tecnológico - Lado A 🔧
+
+![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat-square&logo=python)
 ![Flask](https://img.shields.io/badge/Flask-2.x-black?style=flat-square&logo=flask)
 ![MySQL](https://img.shields.io/badge/MySQL-8.x-orange?style=flat-square&logo=mysql)
-![Pandas](https://img.shields.io/badge/Pandas-LATEST-blueviolet?style=flat-square&logo=pandas)
-![HTML5](https://img.shields.io/badge/HTML5-orange?style=flat-square&logo=html5)
-![CSS3](https://img.shields.io/badge/CSS3-blue?style=flat-square&logo=css3)
+![Pandas](https://img.shields.io/badge/Pandas-1.5+-blueviolet?style=flat-square&logo=pandas)
+![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.2+-orange?style=flat-square&logo=scikit-learn)
+![Docker](https://img.shields.io/badge/Docker-20.10+-blue?style=flat-square&logo=docker)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3)
+![pytest](https://img.shields.io/badge/pytest-7.0+-green?style=flat-square&logo=pytest)
 
-## 📁 Estructura del Proyecto
+## 📁 El Mapa del Tesoro - Estructura del Proyecto 📁
 
+```
 e1_regression/
-├── main.py # Punto de entrada de la aplicación
-├── config.py # Clases de configuración (lee .env)
-├── .env # Archivo de variables de entorno
-├── requirements.txt # Dependencias de Python
-├── app/ # Directorio principal de la aplicación Flask
-│ ├── init.py # Fábrica de la aplicación (create_app)
-│ ├── routes.py # Definición de rutas (Blueprint)
-│ ├── model_loader.py # Lógica para cargar el modelo ML
-│ ├── models/ # Modelos de datos (interacción con BD)
-│ │ ├── init.py
-│ │ ├── property.py # Modelo para la tabla 'properties'
-│ │ └── prediction.py # Modelo para la tabla 'predictions'
-│ ├── utils/ # Funciones de utilidad
-│ │ ├── init.py
-│ │ └── db_utils.py # Utilidades para interactuar con la BD
-│ ├── connection/ # (Opcional, podría contener lógica de conexión)
-│ │ ├── init.py
-│ │ └── db_connection.py
-│ ├── templates/ # Plantillas HTML (Jinja2)
-│ │ ├── base.html # Plantilla base
-│ │ ├── index.html # Página principal
-│ │ └── predict.html # Página de predicción (formulario y resultado)
-│ └── static/ # Archivos estáticos (CSS, JS, Imágenes)
-│ ├── css/
-│ │ └── index.css # Hoja de estilos principal
-│ ├── js/
-│ │ └── index.js # (Placeholder para JS futuro)
-│ └── imgs/
-│ └── ... # (Placeholder para imágenes futuras)
-├── database/ # Scripts SQL para la base de datos
-│ ├── schema.sql # Script para crear la estructura de la BD y tablas
-│ └── seed.sql # (Opcional) Script para datos iniciales
-├── model/ # Carpeta para el modelo ML serializado
-│ └── optimised_bayesian_pipeline.pkl # Modelo ML 
-└── venv/ # Entorno virtual de Python
+├── app/                          # Núcleo de la aplicación, como MTV era el núcleo de la cultura pop
+│   ├── __init__.py               # La introducción, como el intro de "Fresh Prince of Bel-Air"
+│   ├── routes.py                 # Define las rutas, como un mapa de Highway 1
+│   ├── model_loader.py           # Cargador del modelo ML, como quien carga un casete favorito
+│   ├── models/                   # Modelos ORM para interacción con DB
+│   │   ├── property.py           # Maneja propiedades inmobiliarias
+│   │   └── prediction.py         # Gestiona predicciones de precios
+│   ├── templates/                # Plantillas HTML, el esqueleto de nuestra visión
+│   │   ├── base.html             # Template base, como el álbum base de tu colección
+│   │   ├── index.html            # Página de inicio, tu portal al mundo retro
+│   │   └── predict.html          # Calculadora de precios, la estrella del show
+│   ├── static/                   # Recursos estáticos, como tu colección de vinilos
+│   │   ├── css/                  # Estilos que te transportan a la época dorada
+│   │   │   ├── index.css         # Estilos de la página principal y base
+│   │   │   └── california-style.css # El estilo de la calculadora, puro 90s
+│   │   ├── js/                   # JavaScript para interactividad, como los efectos especiales
+│   │   │   ├── index.js          # Funcionalidad básica
+│   │   │   └── california-form.js # Lógica del formulario paso a paso
+│   │   └── imgs/                 # Imágenes decorativas con vibra noventera
+├── database/                     # Scripts para la base de datos
+│   ├── schema.sql                # Estructura de tablas, como planos de tu casa soñada
+│   └── seed.sql                  # Datos iniciales (opcional)
+├── eda/                          # Análisis Exploratorio de Datos
+│   └── california-housing-eda.ipynb # Nuestro viaje a través de los datos
+├── ml-models/                    # Laboratorio de modelos de ML
+│   ├── export-models/            # Almacén de modelos entrenados
+│   ├── lineal-regression.ipynb   # Exploración de regresión lineal
+│   ├── ridge-regression.ipynb    # Desarrollo de nuestro modelo campeón
+│   ├── tree-decision.ipynb       # Experimentos con árboles de decisión
+│   └── bayessian-regression.ipynb # Intentos con enfoque bayesiano
+├── model/                        # Modelos en producción
+│   └── modelo_ridge_california_housing.pkl # Nuestro modelo estrella serializado
+├── data/                         # Conjunto de datos
+│   ├── train.csv                 # Dataset original de California Housing
+│   ├── train_es.csv              # Versión traducida al español
+│   └── train_es_clean.csv        # Versión limpia y metricada
+├── tests/                        # Tests automatizados, porque somos profesionales
+│   ├── test_model_loader.py      # Verifica la carga correcta del modelo
+│   ├── test_prediction.py        # Asegura predicciones precisas
+│   └── conftest.py               # Configuración compartida para tests
+├── main.py                       # Punto de entrada principal, el piloto de esta nave
+├── config.py                     # Configuraciones para diferentes entornos
+├── Dockerfile                    # Receta para contenerizar la aplicación
+├── compose.yaml                  # Orquestación de servicios Docker
+└── README.md                     # La guía que estás leyendo ahora, ¡Totalmente rad!
+```
 
+## 🏄‍♂️ Instalación: Más Fácil Que Programar Tu VCR 🏄‍♂️
 
-## 🔧 Instalación y Configuración
+### Prerequisitos (Lo Básico Que Necesitas)
 
-Sigue estos pasos para poner en marcha la aplicación localmente:
+* Python 3.8+ (más versátil que un reloj Casio multifunción)
+* MySQL 8+ (más robusto que una Game Boy después de caer en el agua)
+* Docker & Docker Compose (opcional, pero más conveniente que un control remoto universal)
+* pytest (para validar que todo está más en orden que tu colección de cromos)
 
-1.  **Clonar el Repositorio:**
-    ```bash
-    git clone <url-de-tu-repositorio>
-    cd e1_regression
-    ```
+### Instalación Manual (El Camino Clásico)
 
-2.  **Crear y Activar Entorno Virtual:**
-    ```bash
-    # Linux / macOS
-    python3 -m venv venv
-    source venv/bin/activate
+1. **Clona el repositorio como quien graba un mixtape personalizado:**
+   ```bash
+   git clone <url-repo>
+   cd e1_regression
+   ```
 
-    # Windows (cmd / PowerShell)
-    python -m venv venv
-    .\venv\Scripts\activate
-    ```
+2. **Crea un entorno virtual más aislado que tu habitación de adolescente:**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # En Windows: venv\Scripts\activate
+   ```
 
-3.  **Instalar Dependencias:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-    *(Asegúrate de tener las cabeceras de desarrollo de MySQL/MariaDB si `mysqlclient` da problemas: `sudo apt-get install default-libmysqlclient-dev` en Debian/Ubuntu)*
+3. **Instala dependencias como quien completa un álbum de cromos:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-4.  **Configurar Variables de Entorno:**
-    *   Crea un archivo llamado `.env` en la raíz del proyecto (`e1_regression/`).
-    *   Copia el contenido de `.env.example` (si lo creas) o añade las siguientes variables, **ajustando los valores a tu entorno**:
+4. **Configura tu archivo .env con más secretos que tu agenda de estudiante:**
+   ```
+   FLASK_APP=main.py
+   FLASK_ENV=development
+   SECRET_KEY='tu_clave_secreta_super_radical'
+   MYSQL_HOST='localhost'
+   MYSQL_USER='tu_usuario'
+   MYSQL_PASSWORD='tu_password_seguro'
+   MYSQL_DB='housing_predictions'
+   MYSQL_CURSORCLASS='DictCursor'
+   MODEL_PATH='model/modelo_ridge_california_housing.pkl'
+   ```
 
-    ```dotenv
-    # Flask Config
-    FLASK_APP=main.py
-    FLASK_ENV=development # Cambiar a 'production' en despliegue
-    SECRET_KEY='tu_clave_secreta_muy_segura_y_aleatoria_aqui!' # ¡Genera una segura!
+5. **Prepara la base de datos como preparabas tu estudio para grabar un casete:**
+   ```bash
+   mysql -u root -p < database/schema.sql
+   ```
 
-    # Database Config (Ajusta a tus credenciales de MySQL)
-    MYSQL_HOST='localhost'
-    MYSQL_USER='root'  # O tu usuario específico como 'db_bayessian'
-    MYSQL_PASSWORD='tu_contraseña_mysql' # ¡Tu contraseña real!
-    MYSQL_DB='housing_predictions'
-    MYSQL_CURSORCLASS='DictCursor' # Recomendado
+6. **Lanza la aplicación y viaja en el tiempo:**
+   ```bash
+   flask run --port=5000
+   ```
 
-    # Model Config (Ajusta si el nombre/ruta cambia)
-    MODEL_PATH='model/optimised_bayesian_pipeline.pkl'
-    ```
-    *   **¡Importante!** No subas tu archivo `.env` a Git. Asegúrate de que `.gitignore` lo incluya.
+### Instalación Con Docker (El Camino Express)
 
-5.  **Base de Datos MySQL:**
-    *   Asegúrate de tener un servidor MySQL instalado y ejecutándose.
-    *   Conéctate a tu servidor MySQL (p.ej., con `mysql -u root -p`).
-    *   **Crea la base de datos:**
-        ```sql
-        CREATE DATABASE IF NOT EXISTS housing_predictions CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-        ```
-    *   **(Opcional)** Si no usas `root`, crea un usuario específico y otórgale permisos (reemplaza `'tu_usuario'` y `'tu_contraseña'`):
-        ```sql
-        -- CREATE USER IF NOT EXISTS 'tu_usuario'@'localhost' IDENTIFIED BY 'tu_contraseña';
-        -- GRANT ALL PRIVILEGES ON housing_predictions.* TO 'tu_usuario'@'localhost';
-        -- FLUSH PRIVILEGES;
-        ```
-    *   **Ejecuta el Schema:** Sal de la consola MySQL y ejecuta desde la terminal (en la raíz del proyecto):
-        ```bash
-        mysql -u TU_USUARIO_MYSQL -p housing_predictions < database/schema.sql
-        ```
-        (Reemplaza `TU_USUARIO_MYSQL` por `root` o tu usuario específico. Te pedirá la contraseña).
+Para quienes prefieren la comodidad de los 90s tardíos, Docker es tan fácil como usar un CD en lugar de rebobinar casetes:
 
-6.  **Colocar el Modelo:**
-    *   Asegúrate de que tu archivo de modelo preentrenado (`optimised_bayesian_pipeline.pkl`) se encuentra **dentro** de la carpeta `model/` en la raíz del proyecto.
+```bash
+# Levanta todo el stack con un solo comando:
+docker compose up -d
 
-## ▶️ Ejecutar la Aplicación
+# Para ver los logs mientras corre:
+docker compose logs -f
+```
 
-Una vez completada la instalación y configuración:
+## 🧪 Testing: Certifica Tu Obra Maestra 🧪
 
-1.  Asegúrate de que tu entorno virtual esté activado.
-2.  Ejecuta el script principal:
-    ```bash
-    python main.py
-    ```
-    o usando el comando de Flask:
-    ```bash
-    flask run --host=0.0.0.0 --port=5000
-    ```
+Nuestras pruebas automatizadas son compatibles tanto con la instalación local como con Docker. Asegúrate de que todo funciona como un reloj con estos comandos:
 
-3.  La aplicación estará disponible en: `http://127.0.0.1:5000` (o la IP de tu máquina en el puerto 5000).
+### Test Individual (Precisión Quirúrgica)
 
-## 💻 Uso
+```bash
+# Verifica que el modelo carga correctamente:
+pytest -xvs tests/test_model_loader.py
 
-### Interfaz Web
+# Comprueba que las predicciones funcionan:
+pytest -xvs tests/test_prediction.py
+```
 
-*   **Página Principal (`/`):** Accede a `http://127.0.0.1:5000/`. Verás una introducción y una tabla (inicialmente vacía) con las últimas predicciones guardadas.
-*   **Formulario de Predicción (`/predict`):** Accede a `http://127.0.0.1:5000/predict`. Rellena los campos del formulario con los datos de la zona y haz clic en "Predecir Valor". Se mostrará el resultado y los datos se guardarán en la base de datos.
+### Test Suite Completo (La Experiencia Total)
 
-### API Endpoint
+```bash
+# Ejecuta todas las pruebas disponibles:
+pytest -xvs tests/
+```
 
-*   **Endpoint:** `POST /api/v1/predictions`
-*   **Método:** `POST`
-*   **Headers:** `Content-Type: application/json`
-*   **Cuerpo (Body):** Un objeto JSON con las características requeridas. Los nombres de las claves deben coincidir con los esperados en `routes.py` (ej. `MedInc`, `HouseAge`, etc.).
+Nuestros tests son compatibles con la instalación dockerizada, funcionando igual de bien que un Walkman dentro o fuera de su estuche protector.
 
-    **Ejemplo de Petición JSON:**
-    ```json
-    {
-        "MedInc": 8.3,
-        "HouseAge": 40,
-        "AveRooms": 6.5,
-        "AveBedrms": 1.1,
-        "Population": 400,
-        "AveOccup": 2.8,
-        "Latitude": 37.8,
-        "Longitude": -122.2,
-        "ActualValue": 4.5  // Opcional: Para guardar valor real si se conoce
-    }
-    ```
+## 🚀 Uso: Una Experiencia Más Fluida Que Tu Gel Para El Pelo 🚀
 
-*   **Respuesta Exitosa (Código `201 Created`):**
-    ```json
-    {
-        "message": "Predicción creada exitosamente.",
-        "property": {
-            "id": 1, // ID de la propiedad creada
-            "med_income": 8.3,
-            "house_age": 40.0,
-            "ave_rooms": 6.5,
-            "ave_bedrooms": 1.1,
-            "population": 400.0,
-            "ave_occupancy": 2.8,
-            "latitude": 37.8,
-            "longitude": -122.2,
-            "median_value": 4.5, // Valor real guardado (si se envió)
-            "created_at": "..." // Fecha/hora de creación
-        },
-        "prediction": {
-            "id": 1, // ID de la predicción creada
-            "property_id": 1,
-            "predicted_value": 4.853, // Valor predicho por el modelo
-            "actual_value": 4.5, // Valor real guardado (si se envió)
-            "created_at": "..." // Fecha/hora de creación
-        }
-    }
-    ```
+1. **Accede a la aplicación** a través de `http://localhost:5000` para ver el historial de predicciones, como quien revisa su colección de cromos.
 
-*   **Respuestas de Error:**
-    *   `400 Bad Request`: Datos JSON inválidos, faltan campos requeridos o tipos de datos incorrectos.
-    *   `415 Unsupported Media Type`: Si no se envía `Content-Type: application/json`.
-    *   `500 Internal Server Error`: Si ocurre un error inesperado en el servidor (ej. modelo no cargado, error de BD irrecuperable).
+2. **Navega a "Calcular Precio"** para iniciar tu aventura predictiva, como quien ponía su casete favorito.
 
-## 💡 Modelo de Machine Learning
+3. **Sigue el proceso paso a paso** completando los campos sobre tu casa soñada:
+   - Elige la calidad general (de 1 a 10)
+   - Indica metros habitables, capacidad de garaje y otras características
+   - Selecciona detalles como año de construcción, número de baños y habitaciones
+   - Define acabados, materiales y ubicación
 
-*   El modelo (`optimised_bayesian_pipeline.pkl`) es cargado al inicio de la aplicación.
-*   Se espera que sea un objeto serializado (usando `pickle`) compatible con la interfaz de Scikit-Learn (es decir, que tenga un método `.predict()`).
-*   El modelo debe esperar un DataFrame de Pandas como entrada para `.predict()`, con columnas que coincidan con las claves del formulario/API: `['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 'AveOccup', 'Latitude', 'Longitude']`.
+4. **Recibe tu predicción** generada por nuestro modelo Ridge y descubre si tu mansión soñada cuesta como un Lamborghini o como una colección completa de VHS.
 
-## ☁️ Despliegue (Notas)
+## 👾 Squad Goals: El Dream Team 👾
 
-*   Para producción, **NO USES** el servidor de desarrollo de Flask (`flask run` o `python main.py`).
-*   Cambia `FLASK_ENV` a `production` en tu configuración (`.env` o variables de entorno del servidor).
-*   Utiliza un servidor WSGI robusto como Gunicorn o Waitress detrás de un servidor proxy inverso como Nginx o Apache.
-*   Asegúrate de que la configuración de la base de datos y la `SECRET_KEY` sean seguras en el entorno de producción.
+* [**Veida Velázquez (Scrum Master)**](https://github.com/DarthVada36) - Gestiona el proyecto como Goku gestiona el Ki.
+* [**Pepe Ruiz**](https://github.com/peperuizdev) - Desarrolla frontend como Bob Ross pinta árboles felices.
+* [**Omar Lengua**](https://github.com/Omarlsant) - Maneja el backend como un DJ scratching vinilos.
+* [**Maximiliano Scarlato**](https://github.com/MaximilianoScarlato) - Domina algoritmos y datos como Neo dominaba Matrix.
 
-## 🙏 Contribuciones
+## 📜 Licencia: Las Reglas del Juego 📜
 
-Las contribuciones son bienvenidas. Por favor, abre un issue para discutir cambios mayores o simplemente envía un Pull Request para correcciones menores.
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia Factoría F5, al ser un proyecto colaborativo.
+Este proyecto está bajo la Licencia de Factoría F5, que en buen cristiano significa: "Aprende, comparte y cita la fuente. ¡Keep it real!"
 
 ---
+
+*"¿Y si te dijera que puede predecir el precio de tu casa? Whoa..."* – Keanu Reeves en "Matrix" de los 90s (quizás)
+
+*Creado con más nostalgia que un maratón de "Salvados por la Campana" por el Squad "Pacific Dreams" de Factoría F5* 🤙
